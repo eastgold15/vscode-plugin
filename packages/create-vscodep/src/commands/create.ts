@@ -4,7 +4,7 @@ import { VisulimaError } from "@visulima/error";
 import { createPail, type Pail } from "@visulima/pail";
 import { join } from "@visulima/path";
 import { camelCase, kebabCase, pascalCase } from "@visulima/string";
-import { Table } from "@visulima/tabular";
+import { createTable } from "@visulima/tabular";
 import { getDefaultVersions, type VersionGetter } from "../deps";
 import { render } from "../templates";
 import {
@@ -168,9 +168,7 @@ function printBanner() {
 }
 
 function printSummary(p: Preferences) {
-  // Grid 只接受 string | number | null | undefined | GridItem；
-  // 用 addRow 一行一行加，避免 addRows 把 tuple 转成对象后类型不匹配
-  const table = new Table({
+  const table = createTable({
     showHeader: true,
     style: {
       paddingLeft: 1,
@@ -180,7 +178,7 @@ function printSummary(p: Preferences) {
 
   table.setHeaders([bold("选项"), bold("值")]);
 
-  for (const row of [
+  const rows: [string, string][] = [
     ["项目名", p.projectName],
     ["路径", p.dir],
     ["框架", p.framework],
@@ -192,9 +190,10 @@ function printSummary(p: Preferences) {
     ["安装依赖", p.noInstall ? "—" : "✔"],
     ["command name", p.meta.commandName],
     ["view name", p.meta.viewName],
-  ] as const) {
-    table.addRow(row);
-  }
+  ];
+  // addRows 是 rest 参数 (rows: TableCell[]...)，
+  // 用 spread 把外层数组当成参数列表，避免 tuple 落进 TableCell 类型
+  table.addRows(...rows);
 
   console.log(`\n${bold("即将生成：")}\n${table.toString()}\n`);
 }

@@ -19,6 +19,9 @@
     "type-check": "turbo run type-check"
   },
   "resolutions": {},
+  "overrides": {
+    "cookie": "^2.0.1"
+  },
   "devDependencies": {
     "@biomejs/biome": "2.5.6",
     "@typescript/native": "npm:typescript@^7.0.2",

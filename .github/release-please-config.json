@@ -28,6 +28,11 @@
       "release-type": "node",
       "package": "@eastgold15/vite-plugin-vscode",
       "changelog-path": "CHANGELOG.md"
+    },
+    "packages/create-vscodep": {
+      "release-type": "node",
+      "package": "@eastgold15/vscodep-cli",
+      "changelog-path": "CHANGELOG.md"
     }
   }
 }

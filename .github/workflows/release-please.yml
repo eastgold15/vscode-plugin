@@ -27,6 +27,16 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
+
+      - name: Release please
+        uses: googleapis/release-please-action@v4 # v4
+        id: release
+        with:
+          release-type: node
+          config-file: .github/release-please-config.json
+          manifest-file: .github/.release-please-manifest.json
+          token: ${{ secrets.GITHUB_TOKEN }}
+
       - uses: actions/checkout@v7 # v7
 
       - name: 装 bun
@@ -40,20 +50,23 @@ jobs:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
+      - name: 安装 monorepo 根依赖(bun workspaces)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMTOKEN }}
+        run: bun install --frozen-lockfile
+
       # 编译产物：release-please 不会跑 build，但 publish 之前 dist/ 必须在。
       # 每次 push 都要编一遍，build 是 turbo 自带缓存所以不慢。
       - name: 编译全部包
         run: bun run build
 
-      - name: Release please
-        uses: googleapis/release-please-action@v4 # v4
-        id: release
+
+
+      - name: 发布
+        if: ${{ steps.release.outputs.releases_created }}
         env:
-          NPM_TOKEN: ${{ secrets.NPMTOKEN }}
-        with:
-          config-file: .github/release-please-config.json
-          manifest-file: .github/.release-please-manifest.json
-          token: ${{ secrets.DEPLOY_TOKEN }}
+          NODE_AUTH_TOKEN: ${{secrets.NPMTOKEN}}
+        run: npm publish -ws --provenance --access public
 
       - name: 打印 release-please 输出（便于排查）
         if: ${{ always() }}

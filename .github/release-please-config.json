@@ -13,6 +13,7 @@
     { "type": "ci", "section": "CI/CD", "hidden": true },
     { "type": "chore", "section": "Miscellaneous", "hidden": true }
   ],
+
   "packages": {
     "packages/vscode-utils": {
       "release-type": "node",
@@ -34,5 +35,6 @@
       "package": "@eastgold15/vscodep-cli",
       "changelog-path": "CHANGELOG.md"
     }
-  }
+  },
+  "plugins": [{ "type": "node-workspace" }]
 }

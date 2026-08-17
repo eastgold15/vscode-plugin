@@ -1,0 +1,51 @@
+name: publish
+
+# 手动 publish workflow:把当前 packages/elogs 发到 npm。
+# 当前走 NPMTOKEN secret 路径(临时 fallback);后续如果
+# 在 npmjs.com 上配了 Trusted Publisher,可以无 token。
+#
+# token 放在 https://github.com/eastgold15/elogs/settings/secrets/actions 里,
+# 名字: NPMTOKEN,值: `npm token create` 生成的 publish token。
+on:
+  workflow_dispatch:
+
+# 最低权限
+permissions:
+  contents: read
+  id-token: write   # provenance 需要 OIDC,即使走 token 也要这个
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7 # v7
+
+      # 装 bun(bun.lock 是 monorepo 用的锁文件)
+      - uses: oven-sh/setup-bun@v2 # v2
+        with:
+          bun-version: "1.3"
+
+      # setup-node + registry-url 写一个 .npmrc,
+      # 里面 `//registry.npmjs.org/:_authToken=NODE_AUTH_TOKEN`
+      # 这样 npm 走 token 验证身份
+      - uses: actions/setup-node@v4 # v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: 安装 monorepo 根依赖(bun workspaces)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMTOKEN }}
+        run: bun install --frozen-lockfile
+
+      - name: 编译 elogs 包
+        working-directory: packages/elogs
+        run: bun run build
+
+      - name: 发布 elogs 到 npm(带 provenance)
+        working-directory: packages/elogs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPMTOKEN }}
+        # `--provenance` 仍然有效 —— npm 用 NODE_AUTH_TOKEN 验证身份,
+        # 同时用 OIDC 拿 GitHub repo 信息写 provenance
+        run: npm publish --provenance --access public

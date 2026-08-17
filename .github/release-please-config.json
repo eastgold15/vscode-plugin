@@ -1,0 +1,23 @@
+{
+  "$schema": "https://googleapis.github.io/release-please/schemas/config.json",
+  "packages": {
+    "packages/elogs": {
+      "release-type": "node",
+      "package": "@eastgold15/elogs",
+      "changelog-path": "CHANGELOG.md",
+      "changelog-sections": [
+        { "type": "feat", "section": "Features" },
+        { "type": "fix", "section": "Bug Fixes" },
+        { "type": "perf", "section": "Performance" },
+        { "type": "refactor", "section": "Refactors", "hidden": true },
+        { "type": "docs", "section": "Documentation", "hidden": true },
+        { "type": "test", "section": "Tests", "hidden": true },
+        { "type": "build", "section": "Build System", "hidden": true },
+        { "type": "ci", "section": "CI/CD", "hidden": true },
+        { "type": "chore", "section": "Miscellaneous", "hidden": true }
+      ],
+      "pull-request-title-pattern": "chore(release): v${version}",
+      "extra-files": ["packages/elogs/package.json"]
+    }
+  }
+}

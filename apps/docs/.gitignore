@@ -1,0 +1,7 @@
+# Blume
+/.blume/
+.blume-verify/
+
+# Astro
+/.astro/
+/dist/

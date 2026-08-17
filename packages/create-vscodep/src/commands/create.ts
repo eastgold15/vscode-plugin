@@ -4,7 +4,7 @@ import { VisulimaError } from "@visulima/error";
 import { createPail, type Pail } from "@visulima/pail";
 import { join } from "@visulima/path";
 import { camelCase, kebabCase, pascalCase } from "@visulima/string";
-import { createTable, Table } from "@visulima/tabular";
+import { Table, TableCell } from "@visulima/tabular";
 import { getDefaultVersions, type VersionGetter } from "../deps";
 import { render } from "../templates";
 import {
@@ -20,8 +20,7 @@ import {
 
 const require = createRequire(import.meta.url);
 
-const logger: Pail = createPail({ scope: ["vscodep"], type: "pretty" });
-
+const logger: Pail = createPail().scope("vscodep");
 let cachedVersions: VersionGetter | undefined;
 function getVersions(): VersionGetter {
   if (!cachedVersions) {
@@ -163,8 +162,21 @@ function printBanner() {
 }
 
 function printSummary(p: Preferences) {
-  const table = new Table();
+  // 1. 创建 Table 实例，传入配置
+  const table = new Table({
+    colAligns: ["right", "left"], // 第一列右对齐，第二列左对齐
+    columnWidths: [18, undefined], // 第一列 18 字符，第二列自适应
+    showHeader: true, // 显示表头
+    style: {
+      paddingLeft: 1,
+      paddingRight: 1,
+    },
+  });
+
+  // 2. 设置表头
   table.setHeaders([bold("选项"), bold("值")]);
+
+  // 3. 添加数据行
   table.addRows([
     ["项目名", p.projectName],
     ["路径", p.dir],
@@ -177,11 +189,10 @@ function printSummary(p: Preferences) {
     ["安装依赖", p.noInstall ? "—" : "✔"],
     ["command name", p.meta.commandName],
     ["view name", p.meta.viewName],
-  ]);
-  // eslint-disable-next-line no-console
+  ] as unknown as TableCell[]);
+
+  // 4. 输出
   console.log(`\n${bold("即将生成：")}\n${table.toString()}\n`);
-  // 静默 mark createTable 引用以避免 tree-shake 警告
-  void createTable;
 }
 
 async function promptMissing(p: PreferencesClass) {

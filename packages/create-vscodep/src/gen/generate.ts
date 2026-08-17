@@ -85,7 +85,7 @@ export async function generateCode(options: GenOptions) {
     writing = writing.then(async () => {
       const codes = [parts.nls, parts.pkg].filter(Boolean);
       await writeFile(
-        getDtsOutputPath(opts),
+        await getDtsOutputPath(opts),
         `${DTS_HEADER}\n${codes.join("\n")}`
       );
     });
@@ -126,20 +126,18 @@ async function genNls(
     return;
   }
 
-  const defaultLocale: Record<string, string> = {
-    ...readJsonSync<Record<string, string>>(
-      join(localePath, `${opts.lang}${JSON_EXT}`)
-    ),
-  };
+  const defaultLocale = readJsonSync<Record<string, string>>(
+    join(localePath, `${opts.lang}${JSON_EXT}`)
+  ) as Record<string, string>;
 
   const nlsKeys: string[] = [];
 
   await Promise.all(
     files.map(async (name) => {
       const locale = name.slice(0, -JSON_EXT.length);
-      const messages: Record<string, string> = {
-        ...(await readJson<Record<string, string>>(join(localePath, name))),
-      };
+      const messages = (await readJson<Record<string, string>>(
+        join(localePath, name)
+      )) as Record<string, string>;
       for (const key of Object.keys(defaultLocale)) {
         messages[key] = messages[key] || defaultLocale[key];
       }
@@ -261,9 +259,9 @@ async function genPackageDts(
   parts: DtsParts,
   mergeDts: () => Promise<void>
 ) {
-  const pkg = await readJson<IExtensionManifest>(
+  const pkg = (await readJson<IExtensionManifest>(
     join(opts.cwd, "package.json")
-  );
+  )) as IExtensionManifest;
 
   const blocks = [getCommandDts(pkg, opts), getViewDts(pkg)].filter(Boolean);
   parts.pkg = blocks.length

@@ -47,7 +47,8 @@
         "useImportType": "off",
         "useCollapsedElseIf": "off",
         "useDefaultSwitchClause": "off",
-        "useDestructuring": "off"
+        "useDestructuring": "off",
+        "useErrorCause": "off"
       },
       "correctness": {
         "noUnusedVariables": "off",

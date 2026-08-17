@@ -11,7 +11,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsdown",
+    "build": "tsdown && npm link ",
     "dev": "tsdown --watch",
     "lint": "ultracite check .",
     "lint:fix": "ultracite fix .",

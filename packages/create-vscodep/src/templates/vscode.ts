@@ -5,23 +5,14 @@ export function getVSCodeSettings(preferences: Preferences) {
   return outdent`
     {
       "editor.formatOnSave": true,
-      "editor.defaultFormatter": "${preferences.linter === "Biome" ? "biomejs.biome" : "esbenp.prettier-vscode"}",
-      "typescript.tsdk": "node_modules/typescript/lib",
       "typescript.enablePromptUseWorkspaceTsdk": true,
-      "vitest.enable": true
     }
   `;
 }
 
 export function getVSCodeExtensions(preferences: Preferences) {
   const extensions = [
-    "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
-    "biomejs.biome",
-    "vscodevim.vim",
     "usernamehw.errorlens",
-    "GitHub.copilot",
-    "WakaTime.vscode-wakatime",
     "yzhang.markdown-all-in-one",
     "streetsidesoftware.code-spell-checker",
     "bradlc.vscode-tailwindcss",
@@ -38,7 +29,7 @@ export function getVSCodeLaunch(preferences: Preferences) {
   const { meta } = preferences;
 
   return outdent`
-   // A launch configuration that compiles the extension and then opens it inside a new window
+  // A launch configuration that compiles the extension and then opens it inside a new window
   // Use IntelliSense to learn about possible attributes.
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
@@ -56,7 +47,7 @@ export function getVSCodeLaunch(preferences: Preferences) {
       "outFiles": [
         "\${workspaceFolder}/dist/extension/*.js"
       ],
-      "preLaunchTask": "npm: dev"
+      "preLaunchTask": "bun: dev"
     },
     {
       "name": "Preview Extension",
@@ -68,9 +59,9 @@ export function getVSCodeLaunch(preferences: Preferences) {
       "outFiles": [
         "\${workspaceFolder}/dist/extension/*.js"
       ],
-      "preLaunchTask": "npm: build"
+      "preLaunchTask": "bun: build"
     }
-  ]
+   ]
   }
   `;
 }
@@ -83,13 +74,13 @@ export function getVSCodeTasks(preferences: Preferences) {
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
+      "type": "bun",
       "script": "dev",
       "problemMatcher": {
         "owner": "typescript",
         "fileLocation": "relative",
         "pattern": {
-          "regexp": "^([a-zA-Z]\\:/?([\\w\\-]/?)+\\.\\w+):(\\d+):(\\d+): (ERROR|WARNING)\\: (.*)$",
+          "regexp": "${"^([a-zA-Z]\\:/?([\\w\\-]/?)+\\.\\w+):(\\d+):(\\d+): (ERROR|WARNING)\\: (.*)$"}",
           "file": 1,
           "line": 3,
           "column": 4,
@@ -120,7 +111,7 @@ export function getVSCodeTasks(preferences: Preferences) {
       },
       "problemMatcher": []
     }
-  ]
+   ]
   }
   `;
 }

@@ -2,7 +2,6 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import type { VersionGetter } from "../deps";
 import type { Preferences } from "../utils";
-import { getBiomeConfig } from "./biome";
 import { getExtensionIndex } from "./extension";
 import { getExtensionHelper } from "./extension.helper";
 import { getExtensionPanel } from "./extension.panel";
@@ -16,7 +15,6 @@ import {
   getTSConfigNode,
   getTSConfigRoot,
 } from "./tsconfig.json";
-import { getUltraciteConfig } from "./ultracite";
 import { getViteConfig } from "./vite.config";
 import {
   getVSCodeExtensions,
@@ -133,16 +131,6 @@ export async function render(
     await fs.writeFile(
       path.join(projectDir, "src", "shims-vue.d.ts"),
       getVueShims()
-    );
-  }
-
-  // 写入 Linter 配置
-  if (preferences.linter === "Biome") {
-    await fs.writeFile(path.join(projectDir, "biome.json"), getBiomeConfig());
-  } else if (preferences.linter === "ultracite") {
-    await fs.writeFile(
-      path.join(projectDir, "biome.json.bak"),
-      getUltraciteConfig()
     );
   }
 

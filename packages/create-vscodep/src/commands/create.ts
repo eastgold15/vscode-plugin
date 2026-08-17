@@ -12,7 +12,6 @@ import {
   createPrompt,
   detectPackageManager,
   type Framework,
-  type Linter,
   type PackageManager,
   type Preferences,
   PreferencesClass,
@@ -39,7 +38,7 @@ export const createCommand = {
   description: "创建一个新的 VSCode 扩展项目脚手架",
   examples: [
     "vscodep create my-extension",
-    "vscodep create my-extension --pm bun --framework react --linter ultracite",
+    "vscodep create my-extension --pm bun --framework react ",
     "vscodep create my-extension --no-git --no-install",
   ],
   async execute({
@@ -57,7 +56,6 @@ export const createCommand = {
     p.dir = projectDir;
     p.packageManager = readOption<PackageManager>(options, "pm", "bun");
     p.framework = readOption<Framework>(options, "framework", "react");
-    p.linter = readOption<Linter>(options, "linter", "ultracite");
     p.git = readOption<boolean>(options, "git", true);
     p.vscode = readOption<boolean>(options, "vscode", true);
     p.noInstall = readOption<boolean>(options, "no-install", false);
@@ -94,7 +92,8 @@ export const createCommand = {
         (preferences.noInstall
           ? `    ${cyan(`${preferences.packageManager} install`)}\n`
           : "") +
-        `    ${cyan(`${preferences.packageManager} run dev`)}\n`
+        `    ${cyan(`${preferences.packageManager} run dev`)}\n` +
+        `${cyan("bunx ultracite init ")} 建议使用ultracite做代码格式美化,选择lefthooks \n`
     );
   },
   name: "create",
@@ -111,13 +110,6 @@ export const createCommand = {
       defaultValue: "react",
       description: "前端框架（react/vue）",
       name: "framework",
-      type: String,
-    },
-    {
-      alias: "l",
-      defaultValue: "ultracite",
-      description: "代码检查工具（Biome/ultracite/None）",
-      name: "linter",
       type: String,
     },
     {
@@ -182,7 +174,6 @@ function printSummary(p: Preferences) {
     ["项目名", p.projectName],
     ["路径", p.dir],
     ["框架", p.framework],
-    ["Linter", p.linter],
     ["包管理器", p.packageManager],
     ["Runtime", p.runtime],
     ["git 仓库", p.git ? "✔" : "—"],
@@ -209,9 +200,8 @@ async function promptMissing(p: PreferencesClass) {
         { title: "Bun", value: "bun" },
         { title: "npm", value: "npm" },
         { title: "pnpm", value: "pnpm" },
-        { title: "yarn", value: "yarn" },
       ],
-      initial: ["bun", "npm", "pnpm", "yarn"].indexOf(detected) || 0,
+      initial: ["bun", "npm", "pnpm"].indexOf(detected) || 0,
       message: "包管理器",
       name: "packageManager",
       type: "select",
@@ -226,17 +216,6 @@ async function promptMissing(p: PreferencesClass) {
       name: "framework",
       type: "select",
     });
-    questions.push({
-      choices: [
-        { title: "ultracite", value: "ultracite" },
-        { title: "Biome", value: "Biome" },
-        { title: "None", value: "None" },
-      ],
-      initial: 0,
-      message: "Linter",
-      name: "linter",
-      type: "select",
-    });
   }
 
   if (questions.length === 0) {
@@ -249,9 +228,6 @@ async function promptMissing(p: PreferencesClass) {
   if (answers.framework) {
     p.framework = answers.framework;
   }
-  if (answers.linter) {
-    p.linter = answers.linter;
-  }
 }
 
 function materialize(p: PreferencesClass): Preferences {
@@ -261,7 +237,6 @@ function materialize(p: PreferencesClass): Preferences {
     dir: p.dir,
     framework: p.framework,
     git: p.git,
-    linter: p.linter,
     meta: p.meta,
     noInstall: p.noInstall,
     packageManager: p.packageManager,

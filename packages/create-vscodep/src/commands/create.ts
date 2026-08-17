@@ -4,7 +4,7 @@ import { VisulimaError } from "@visulima/error";
 import { createPail, type Pail } from "@visulima/pail";
 import { join } from "@visulima/path";
 import { camelCase, kebabCase, pascalCase } from "@visulima/string";
-import { Table, TableCell } from "@visulima/tabular";
+import { Table } from "@visulima/tabular";
 import { getDefaultVersions, type VersionGetter } from "../deps";
 import { render } from "../templates";
 import {
@@ -24,12 +24,18 @@ const logger: Pail = createPail().scope("vscodep");
 let cachedVersions: VersionGetter | undefined;
 function getVersions(): VersionGetter {
   if (!cachedVersions) {
-    cachedVersions = getDefaultVersions(require.resolve("../../package.json"));
+    cachedVersions = getDefaultVersions(require.resolve("../package.json"));
   }
   return cachedVersions;
 }
 
 export const createCommand = {
+  argument: {
+    description: "项目名（用作目录名 + package.json#name）",
+    name: "name",
+    required: false,
+    type: String,
+  },
   description: "创建一个新的 VSCode 扩展项目脚手架",
   examples: [
     "vscodep create my-extension",
@@ -162,22 +168,19 @@ function printBanner() {
 }
 
 function printSummary(p: Preferences) {
-  // 1. 创建 Table 实例，传入配置
+  // Grid 只接受 string | number | null | undefined | GridItem；
+  // 用 addRow 一行一行加，避免 addRows 把 tuple 转成对象后类型不匹配
   const table = new Table({
-    colAligns: ["right", "left"], // 第一列右对齐，第二列左对齐
-    columnWidths: [18, undefined], // 第一列 18 字符，第二列自适应
-    showHeader: true, // 显示表头
+    showHeader: true,
     style: {
       paddingLeft: 1,
       paddingRight: 1,
     },
   });
 
-  // 2. 设置表头
   table.setHeaders([bold("选项"), bold("值")]);
 
-  // 3. 添加数据行
-  table.addRows([
+  for (const row of [
     ["项目名", p.projectName],
     ["路径", p.dir],
     ["框架", p.framework],
@@ -189,9 +192,10 @@ function printSummary(p: Preferences) {
     ["安装依赖", p.noInstall ? "—" : "✔"],
     ["command name", p.meta.commandName],
     ["view name", p.meta.viewName],
-  ] as unknown as TableCell[]);
+  ] as const) {
+    table.addRow(row);
+  }
 
-  // 4. 输出
   console.log(`\n${bold("即将生成：")}\n${table.toString()}\n`);
 }
 

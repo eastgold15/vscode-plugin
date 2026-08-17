@@ -1,0 +1,75 @@
+---
+title: Linter 选择
+description: ultracite / Biome / None 怎么挑
+---
+
+# Linter 选择
+
+`vscodep` 支持 3 种 Linter，CLI 选项 `--linter` 控制。
+
+## ultracite（默认）
+
+`ultracite` 是基于 Biome 的零配置预设，**严格 lint + 严格格式化**。
+
+生成的项目里：
+
+- `biome.json.bak` —— ultracite 的配置（`@biomejs/biome` 引擎是 ultracite 的依赖）
+- `package.json` 的 devDeps 里有 `ultracite`
+- 没有 `scripts.lint` —— ultracite 通过自己的 CLI 跑
+
+什么时候选 ultracite：
+
+- 团队愿意接受"严格规则 + 自动修复"工作流
+- 不想花时间配 lint 规则
+- 用 TypeScript / React / 现代 JS 语法
+
+## Biome
+
+`@biomejs/biome` 是 Rust 写的单二进制 lint + 格式化工具。生成的项目里有 `biome.json` + `scripts.lint` / `scripts["lint:fix"]`。
+
+```json
+"scripts": {
+  "lint": "biome check .",
+  "lint:fix": "biome check . --write"
+}
+```
+
+什么时候选 Biome 而不是 ultracite：
+
+- 想自己写 `biome.json` 规则
+- 不需要 ultracite 的严苛预设
+- 已经在用 Biome
+
+## None
+
+不装任何 lint 工具。`scripts.lint` 不生成，`biome.json` 也不生成。
+
+什么时候选 None：
+
+- CI / 内部工具，代码量小不需要
+- 团队已经有 ESLint 之外的统一流程
+- 极简脚手架，只想要目录结构
+
+## ESLint 已经被移除
+
+`@eastgold15/vscodep-cli` 早期支持过 ESLint（`--linter=ESLint`），当前版本**完全移除**。
+
+- `versions.json` 不再登记 `eslint / @eslint/js / typescript-eslint / eslint-plugin-react / eslint-plugin-react-hooks`
+- Linter 类型只剩 `Biome | None | ultracite`
+- 如果你之前用 ESLint 模板生成过项目，迁移到 ultracite：
+
+```bash
+# 删旧的 ESLint 依赖
+bun remove eslint @eslint/js typescript-eslint eslint-plugin-react eslint-plugin-react-hooks
+
+# 装 ultracite（包名 + ultracite 都是 peer）
+bun add -D ultracite
+```
+
+## 哪个最快？
+
+| Linter | 启动开销 | 配置成本 |
+| --- | --- | --- |
+| ultracite | ~50ms | 0 |
+| Biome | ~50ms | 中（自己写规则） |
+| None | 0 | 0 |

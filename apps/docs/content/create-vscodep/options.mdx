@@ -1,0 +1,81 @@
+---
+title: CLI 选项
+description: vscodep create 的所有 flag
+---
+
+# CLI 选项
+
+```
+vscodep create [name] [options]
+```
+
+## 位置参数
+
+| 参数 | 说明 | 必需 |
+| --- | --- | --- |
+| `name` | 项目名（同时作为目录名和 `package.json#name`） | 否，默认 `hello-world` |
+
+## 选项
+
+| 选项 | 简写 | 默认 | 可选值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `--pm` | `-p` | `bun` | `bun` / `npm` / `pnpm` / `yarn` | 包管理器 |
+| `--framework` | `-f` | `react` | `react` / `vue` | Webview 前端框架 |
+| `--linter` | `-l` | `ultracite` | `ultracite` / `Biome` / `None` | 代码检查工具 |
+| `--git` | — | `true` | bool | 是否 `git init` + 首次 commit |
+| `--vscode` | — | `true` | bool | 是否生成 `.vscode/` 调试配置（launch/tasks/settings/extensions） |
+| `--no-install` | — | `false` | bool | 跳过 `bun install` / `npm install`（CI 场景） |
+
+## 全局选项（来自 cerebro）
+
+| 选项 | 说明 |
+| --- | --- |
+| `-v, --verbose` | 详细日志 |
+| `--debug` | 调试日志 |
+| `-q, --quiet` | 静默 |
+| `-V, --version` | 输出版本号 |
+| `--no-color` | 关闭色码 |
+| `--color` | 强制色码 |
+
+## 跳过 prompt
+
+如果 4 个核心选项都通过 flag 传齐，会自动跳过 prompts。如果有任一没传，CLI 会用 `prompts` 库交互问。
+
+CI 环境会设 `VSCODEP_NO_PROMPT=1` 强制无交互：
+
+```bash
+VSCODEP_NO_PROMPT=1 vscodep create my-ext --pm bun --framework react --linter ultracite
+```
+
+## 覆盖版本号（CI 锁定）
+
+通过环境变量 `VCODEP_VER_<UPPER_SNAKE_NAME>` 覆盖任一包版本：
+
+```bash
+VCODEP_VER_REACT=19.0.0 vscodep create my-ext --pm bun --framework react --linter ultracite
+# 生成的项目里 react 会被锁到 19.0.0，其他版本走默认
+```
+
+完整覆盖链：env → CLI 自身 `package.json`（@eastgold15/* 自动跟随） → 内置 `versions.json` 兜底。
+详见 [三桶依赖系统](/docs/create-vscodep/deps-system)。
+
+## 例子
+
+```bash
+# 最小
+vscodep create my-ext
+
+# React + ultracite + bun
+vscodep create my-ext -p bun -f react -l ultracite
+
+# Vue + Biome + pnpm + 不自动装依赖
+vscodep create my-ext -p pnpm -f vue -l Biome --no-install
+
+# 跳过 .vscode 配置（不要 launch.json）
+vscodep create my-ext --vscode=false
+
+# CI：禁用 prompt + 锁版本
+VSCODEP_NO_PROMPT=1 \
+  VCODEP_VER_REACT=19.0.0 \
+  vscodep create my-ext -p bun -f react -l ultracite
+```

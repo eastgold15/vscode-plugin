@@ -1,0 +1,101 @@
+---
+title: 三桶依赖系统
+description: 生成项目里 deps / devDeps / peerDeps 的来源
+---
+
+# 三桶依赖系统
+
+`vscodep create` 生成的 `package.json` 严格按三个桶分类，每个包的归属是**声明式**的——而不是散落在 8 个 `if/else` 里手工维护。
+
+## 三桶
+
+| 桶 | 用途 | 例子 |
+| --- | --- | --- |
+| `dependencies` | 运行时必需（webview 真的 `import`） | `react`, `react-dom`, `@vscode/webview-ui-toolkit` |
+| `devDependencies` | 构建 / 调试用 | `vite`, `@vitejs/plugin-react`, `ultracite`, `@types/vscode` |
+| `peerDependencies` | 协作包（你应该已经装了，CLI 不替你装） | `@eastgold15/vscode-utils`, `@eastgold15/vscode-webview` |
+
+## 怎么分类的？
+
+CLI 内部用一个 `VersionGetter` 抽象 + `bucketVersions()` 把包名按声明拆桶：
+
+```ts
+// CLI 内部伪代码
+const buckets = bucketVersions(versions, {
+  dependencies: [...coreDeps, ...frameworkDeps],           // 运行时
+  devDependencies: [...coreDevDeps, ...linterDevDeps],    // 构建时
+  peerDependencies: [...corePeerDeps],                    // 协作
+});
+```
+
+加新包时改对应的数组就行——不会破坏其他桶。
+
+## peerDependencies 为什么是空的就不替用户装？
+
+`@eastgold15/vscode-utils` 和 `@eastgold15/vscode-webview` 是**协作包**：本工具链的一部分，但生成的项目里 webview 端**会显式 import**：
+
+```ts
+// 生成项目 src/utils/vscode.ts
+import { WebviewApi } from '@eastgold15/vscode-webview';
+```
+
+把它放在 `dependencies` 会让 npm 装两份（CLI 自己也声明过、用户项目又装一次）。放 `peerDependencies` 是更"诚实"的表达：**我们假设你已经装了，没装就用你项目根的版本**。
+
+如果你的项目里还没装，生成完跑一次：
+
+```bash
+bun add @eastgold15/vscode-utils @eastgold15/vscode-webview
+```
+
+## 版本号从哪来？
+
+```
+env (VCODEP_VER_*)  →  CLI 自身 package.json  →  versions.json 兜底
+       ↑                    ↑                          ↑
+       │                    │                          │
+  CI 锁定测试            @eastgold15/* 自动跟随      生态包（react/vite/...）
+```
+
+三个来源用 `getChainGetter()` 串成链，上游命中即返回。
+
+| 来源 | 谁维护 | 何时变 |
+| --- | --- | --- |
+| `versions.json`（兜底） | 本仓库 | 升 `@eastgold15/vscodep-cli` 时一起带 |
+| CLI 自身 `package.json` | 本仓库 | 同上 |
+| env `VCODEP_VER_*` | CI | 跑回归测试时锁定 |
+
+## 升级
+
+升 `@eastgold15/vscodep-cli` 后，**新建的项目会自动跟随**——不需要手动改 `versions.json`：
+
+```bash
+# CLI 0.2.0 内置 versions.json 锁 react 19.2.3
+# 你用 CLI 0.2.0 生成新项目 → react 19.2.3
+# 升级到 0.3.0（react 升到 19.3.0）→ 新项目里就是 19.3.0
+```
+
+已有项目不会自动升级——你得自己跑 `bun update`。
+
+## 怎么加新生态包？
+
+举个例子：想把 `vueuse` 加到所有 Vue 项目的 `dependencies` 里。
+
+1. 在 `packages/create-vscodep/src/deps/types.ts` 的 `Versions` 类型加 `vueuse: string;`
+2. 在 `packages/create-vscodep/src/deps/versions.json` 加 `"vueuse": "^11.0.0"`
+3. 在 `packages/create-vscodep/src/templates/package.ts` 的 `frameworkDeps`（Vue 分支）加 `"vueuse"`
+
+类型系统会卡你——漏了第 1 步，第 3 步的 `getter.get("vueuse")` 直接编译失败。这就是这套设计的本质：**版本号单源**，加新包不可能漏一处。
+
+## 高级：在 CI 里锁版本
+
+```yaml
+# .github/workflows/regression.yml
+- name: 跑模板回归
+  env:
+    VCODEP_VER_REACT: '19.2.3'
+    VCODEP_VER_VITE: '7.3.1'
+  run: |
+    bun run build
+    bunx @eastgold15/vscodep-cli create /tmp/test --pm bun --framework react --linter ultracite
+    # 验证生成项目里 react/vite 是锁定的版本
+```

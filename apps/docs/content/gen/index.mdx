@@ -1,0 +1,109 @@
+---
+title: vscodep gen
+description: 从 locales + package.json 生成 nls 和 d.ts
+---
+
+# `vscodep gen`
+
+在已生成的项目（或任何含 `package.json` 的扩展项目）里跑：
+
+```bash
+vscodep gen
+```
+
+它做两件事：
+
+1. **i18n 收窄** —— 从 `locales/<lang>.json` 读出所有 key，生成 `package.nls.json`（默认语言）和 `package.nls.<locale>.json`（其他语言），并在 `vscode.d.ts` 里把 i18n key 收窄为字面量联合类型。
+2. **命令补全** —— 读 `package.json#contributes.commands` + `--builtin` 白名单，在 `vscode.d.ts` 里把 `registerCommand` / `executeCommand` 的 `command` 参数收窄为字面量联合。
+
+两个生成物一起写进同一个 `vscode.d.ts`，靠模块增强（`declare module '@eastgold15/vscode-utils'`）生效，**无需 import 任何生成物**。
+
+## 文件布局
+
+```
+my-extension/
+├── locales/
+│   ├── en.json              # 源语言
+│   ├── zh-cn.json
+│   └── ja.json
+├── package.json             # contributes.commands
+├── src/extension/index.ts   # registerCommand('my-ext.doSomething', ...)
+├── package.nls.json         # ← gen 生成（en）
+├── package.nls.zh-cn.json   # ← gen 生成
+├── package.nls.ja.json      # ← gen 生成
+└── types/
+    └── vscode.d.ts          # ← gen 生成（dtsDir 默认 types/）
+```
+
+## 最小例子
+
+```json
+// locales/en.json
+{
+  "extension.title": "My Extension",
+  "command.show.title": "MyExtension: Show"
+}
+```
+
+```json
+// package.json#contributes.commands
+{
+  "command": "my-ext.show",
+  "title": "%command.show.title%"
+}
+```
+
+```ts
+// src/extension/index.ts
+import { i18n } from '@eastgold15/vscode-utils';
+import { commands, window } from 'vscode';
+
+export function activate() {
+  // 拼错 key 直接编译失败
+  const title = i18n.t('command.show.title');
+
+  // 拼错 command id 直接编译失败
+  commands.registerCommand('my-ext.show', () => {
+    window.showInformationMessage(title);
+  });
+}
+```
+
+跑 `vscodep gen` 后：
+
+```json
+// package.nls.json (gen 生成)
+{
+  "extension.title": "My Extension",
+  "command.show.title": "MyExtension: Show"
+}
+```
+
+```ts
+// types/vscode.d.ts (gen 生成)
+import '@eastgold15/vscode-utils';
+
+declare module '@eastgold15/vscode-utils' {
+  type I18nMessageType =
+    | 'command.show.title'
+    | 'extension.title';
+
+  interface NlsI18n {
+    t: ((message: I18nMessageType, ...args: Array<string | number | boolean>) => string) & ((message: I18nMessageType, args: Record<string, any>) => string);
+  }
+}
+```
+
+`tsc` 在编译期就能抓出所有 i18n key 拼写错误和未知 command id。
+
+## 关键设计
+
+- **不引入新 runtime** —— 生成物是纯 `.d.ts` + `.json`，运行时零开销
+- **watch 模式** —— `vscodep gen --watch` 监听 `locales/` 与 `package.json`，改文件就重生成
+- **CI 跑得通** —— `VSCODEP_NO_PROMPT` 已生效；不需要交互
+- **跨多语言** —— 源语言缺失的 key 用默认回填，避免 `package.nls.<locale>.json` 缺字段
+
+## 下一步
+
+- [nls 生成详解](/docs/gen/nls) —— 默认语言、缺失 key 回填、文件名约定
+- [vscode.d.ts 类型收窄](/docs/gen/vscode-dts) —— command / i18n 收窄原理

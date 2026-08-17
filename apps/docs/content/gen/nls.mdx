@@ -1,0 +1,120 @@
+---
+title: nls 生成详解
+description: locales → package.nls.json 的语义与文件约定
+---
+
+# nls 生成详解
+
+`vscodep gen` 把 `locales/<lang>.json` 编译成 VSCode 原生认识的 `package.nls*.json` 格式。
+
+## 源文件约定
+
+```
+locales/
+├── en.json       # 默认语言（--lang=en 改）
+├── zh-cn.json
+├── ja.json
+└── de.json
+```
+
+每文件是个普通 `Record<string, string>`：
+
+```json
+{
+  "extension.title": "My Extension",
+  "command.show.title": "MyExtension: Show",
+  "command.hide.title": "MyExtension: Hide"
+}
+```
+
+## 输出文件
+
+源语言（默认 `en`）的输出文件名是 **`package.nls.json`**（不带 locale 后缀）—— VSCode 的约定。
+
+其他语言输出 **`package.nls.<locale>.json`**，locale 全部小写：
+
+| 源文件 | 输出 |
+| --- | --- |
+| `locales/en.json` | `package.nls.json` |
+| `locales/zh-cn.json` | `package.nls.zh-cn.json` |
+| `locales/ja.json` | `package.nls.ja.json` |
+
+VSCode 启动时按 `vscode.env.language` 选一个加载；找不到就回退到 `package.nls.json`。
+
+## 缺失 key 回填
+
+源语言的 key 是**基准**。其他语言里漏翻译的 key，会**自动用源语言回填**：
+
+```json
+// locales/en.json
+{ "command.show.title": "MyExtension: Show" }
+
+// locales/zh-cn.json
+{ /* 翻译漏了 */ }
+```
+
+跑 `vscodep gen` 后：
+
+```json
+// package.nls.zh-cn.json
+{ "command.show.title": "MyExtension: Show" }
+```
+
+好处是：UI 不会出裸露的 `%command.show.title%` 占位符。代价是：**翻译漏了不会被提示**——你需要在 CI 之前手动 diff 一下 key 集，或者用 `bunx i18n-check` 之类工具做体检（本工具链不强制）。
+
+## 在 `package.json` 里引用
+
+用 `%key%` 语法：
+
+```json
+{
+  "displayName": "%extension.title%",
+  "contributes": {
+    "commands": [
+      { "command": "my-ext.show", "title": "%command.show.title%" }
+    ]
+  }
+}
+```
+
+VSCode 启动时按 `displayName` 解析到对应 nls 文件；找不到就回退到原始 `%key%` 字符串（开发期就会看到）。
+
+## i18n key 收窄
+
+`vscodep gen` 还会写一段 d.ts：
+
+```ts
+// types/vscode.d.ts
+import '@eastgold15/vscode-utils';
+
+declare module '@eastgold15/vscode-utils' {
+  type I18nMessageType =
+    | 'command.show.title'
+    | 'extension.title';
+
+  interface NlsI18n {
+    t: ((message: I18nMessageType, ...args: Array<string | number | boolean>) => string) & ((message: I18nMessageType, args: Record<string, any>) => string);
+  }
+}
+```
+
+之后：
+
+```ts
+import { i18n } from '@eastgold15/vscode-utils';
+
+i18n.t('command.show.title');      // ✓
+i18n.t('command.show.titel');      // ✗ TS 编译报错
+i18n.t('non.existent.key');        // ✗ TS 编译报错
+```
+
+无需在用户代码里 `import` `vscode.d.ts`——`declare module` 是全局模块增强，TypeScript 自动识别。
+
+## 切换源语言
+
+```bash
+# 默认 en；用 zh-CN 作源
+vscodep gen --lang zh-CN
+```
+
+`package.nls.json` 就会按 `zh-CN` 输出，其他 locale 文件用 `zh-CN` 的 key 回填。

@@ -1,0 +1,74 @@
+---
+title: "@eastgold15/vscode-utils"
+description: 扩展主进程（Node）侧的工具集
+---
+
+# `@eastgold15/vscode-utils`
+
+跑在 **VSCode 扩展主进程**（Node 侧）的工具集。覆盖三类常见需求：
+
+- 配置读写（基于 `vscode.workspace.getConfiguration` 的类型化包装）
+- i18n（配合 `vscodep gen` 生成的 `I18nMessageType`）
+- 用户/工作区信息
+
+## 安装
+
+```bash
+bun add @eastgold15/vscode-utils
+```
+
+## 初始化
+
+在 `activate()` 入口调一次 `init`：
+
+```ts
+// src/extension/index.ts
+import { initExtension } from '@eastgold15/vscode-utils';
+import type { ExtensionContext } from 'vscode';
+
+export function activate(ctx: ExtensionContext) {
+  initExtension(ctx);
+  // ...
+}
+```
+
+之后所有 `@eastgold15/vscode-utils` 的 API 都能拿到正确的 extensionPath / globalState。
+
+## i18n
+
+```ts
+import { i18n } from '@eastgold15/vscode-utils';
+
+i18n.t('command.show.title');           // 同步取值
+await i18n.t('dynamic.message', 42);    // 带参数
+```
+
+`i18n.t` 的 `message` 参数收窄为 `I18nMessageType`——`vscodep gen` 从 `locales/<lang>.json` 生成。拼错编译期报错。
+
+## 配置读写
+
+`@eastgold15/vscode-utils/configuration` 提供类型化包装：
+
+```ts
+import { defineConfig, getConfig } from '@eastgold15/vscode-utils';
+
+const cfg = defineConfig({
+  'my-ext.maxLines': {
+    default: 1000,
+    description: '最大显示行数',
+    type: 'number',
+  },
+});
+
+cfg.activate();                          // 监听变更
+
+const max = getConfig('my-ext.maxLines'); // type-safe，number
+```
+
+## 完整 API
+
+去 [/api](https://typedoc 生成的 API 文档) 看每个 export 的细节。typedoc 配置在 `apps/docs/typedoc.json`，会扫这个包。
+
+## 与 `@eastgold15/vscode-webview` 的关系
+
+主进程和 webview 端的通信是**另一回事**——用 `@eastgold15/vscode-webview` 提供的 `WebviewApi` 包装 `acquireVsCodeApi()`。详见 [vscode-webview 文档](/docs/libs/vscode-webview)。

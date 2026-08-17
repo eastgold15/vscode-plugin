@@ -1,0 +1,111 @@
+---
+title: 贡献指南
+description: 怎么为本仓库提交改动
+---
+
+# 贡献指南
+
+欢迎贡献！本仓库接受所有形式的贡献：bug 报告、功能请求、文档改进、代码改动。
+
+## 仓库结构
+
+Monorepo，4 个发布包 + 1 个文档站 + 1 个旧 elogs 骨架（在迁移中）：
+
+```
+.
+├── packages/
+│   ├── create-vscodep/     # @eastgold15/vscodep-cli
+│   ├── vite-plugin-vscode/ # @eastgold15/vite-plugin-vscode
+│   ├── vscode-utils/       # @eastgold15/vscode-utils
+│   └── vscode-webview/     # @eastgold15/vscode-webview
+└── apps/
+    └── docs/               # 这个文档站
+```
+
+## 本地起步
+
+```bash
+# 1. 克隆
+git clone https://github.com/eastgold15/vscode-plugin.git
+cd vscode-plugin
+
+# 2. 装依赖
+bun install
+
+# 3. 全量构建（首次跑会拉很多 transitive peer）
+bun run build
+
+# 4. 跑测试
+bun test
+
+# 5. 跑类型检查
+bun run type-check
+```
+
+## 改一个包
+
+每个包都独立可构建：
+
+```bash
+cd packages/create-vscodep
+bun run type-check
+bun run build
+bun test
+```
+
+## Conventional Commits
+
+提交信息必须遵循 [Conventional Commits](https://www.conventionalcommits.org/)，**scope 用包目录名**：
+
+```bash
+feat(create-vscodep): 加 vscodep gen 命令
+fix(vite-plugin-vscode): 修 HMR 断连后无法恢复
+docs(docs): 补 i18n 收窄示例
+chore(release): v0.2.0
+```
+
+| 前缀 | 版本号变化 | CHANGELOG 章节 |
+| --- | --- | --- |
+| `feat:` | minor | Features |
+| `fix:` | patch | Bug Fixes |
+| `perf:` | patch | Performance |
+| `feat!:` / `fix!:` | major | 同上 |
+| `BREAKING CHANGE:` (footer) | major | 同上 |
+| `refactor:` / `docs:` / `test:` / `chore:` / `ci:` / `build:` | 不变 | 隐藏 |
+
+## 跑通"自己改的包能正确发布"
+
+```bash
+# 1. 改完代码
+cd packages/create-vscodep
+bun run type-check
+bun run build
+
+# 2. 真生成一次
+VSCODEP_NO_PROMPT=1 node dist/index.mjs create /tmp/test-ext --pm bun
+cat /tmp/test-ext/package.json | head -30
+
+# 3. 跑这个包的测试
+bun test
+```
+
+## PR 检查清单
+
+- [ ] commit 信息符合 Conventional Commits
+- [ ] scope 写对包名（错了一个字母 release-please 会归错包）
+- [ ] `bun run type-check` 在仓库根通过
+- [ ] `bun run build` 在仓库根通过
+- [ ] 受影响的包 `bun test` 通过
+- [ ] 如果改了 CLI 输出/选项，更新 `apps/docs/content/create-vscodep/`
+- [ ] 如果改了 `vscodep gen` 行为，更新 `apps/docs/content/gen/`
+
+## 报告 Issue
+
+- 先搜，确认没人报过
+- 标题清晰，正文给最小复现
+- 附环境：OS、Node/Bun 版本、相关包版本
+- 提 bug 用 `bug` label；提需求用 `enhancement` label
+
+## 行为准则
+
+请友善、专业。技术分歧用事实说话。

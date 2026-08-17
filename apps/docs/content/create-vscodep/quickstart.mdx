@@ -1,0 +1,81 @@
+---
+title: 快速开始
+description: 用 vscodep create 走一遍完整流程
+---
+
+# 快速开始
+
+5 分钟从 0 到能在 VSCode 里 F5 调试。
+
+## 1. 生成项目
+
+```bash
+bunx @eastgold15/vscodep-cli create my-extension
+```
+
+按提示选：
+
+- **包管理器**：bun / npm / pnpm / yarn（默认根据本机检测）
+- **前端框架**：React / Vue
+- **Linter**：ultracite（默认） / Biome / None
+
+也可以一次传完所有选项跳过 prompt：
+
+```bash
+bunx @eastgold15/vscodep-cli create my-extension \
+  --pm bun \
+  --framework react \
+  --linter ultracite \
+  --no-install
+```
+
+## 2. 安装依赖
+
+```bash
+cd my-extension
+bun install
+```
+
+## 3. 打开项目
+
+```bash
+code my-extension
+```
+
+按 **F5** → 启动 Extension Development Host，新窗口里你注册的 command 可执行。
+
+## 4. 看命令面板
+
+新窗口里按 `Ctrl+Shift+P`，输入你生成时给的 command name（默认 `my-extension.showMyExtension`）：
+
+```json
+// package.json
+"contributes": {
+  "commands": [
+    {
+      "command": "my-extension.showMyExtension",
+      "title": "MyExtension: Show"
+    }
+  ]
+}
+```
+
+执行后弹出一个 Webview Panel，渲染你在 `src/App.tsx`（React）或 `src/App.vue`（Vue）写的组件。
+
+## 5. 改代码试 HMR
+
+回到原窗口，改 `src/App.tsx` 的文案 → webview 自动热更新。
+
+## 6. 打生产包
+
+```bash
+bun run build
+```
+
+产物在 `dist/extension/`（主进程 JS）和 `dist/webview/`（webview 静态资源），按 `package.json#main` 字段挂载。
+
+## 下一步
+
+- 想看每个选项的含义？→ [CLI 选项详解](/docs/create-vscodep/options)
+- 想换 linter？→ [Linter 选择](/docs/create-vscodep/linter)
+- 想知道 deps / devDeps / peerDeps 是怎么算出来的？→ [三桶依赖系统](/docs/create-vscodep/deps-system)

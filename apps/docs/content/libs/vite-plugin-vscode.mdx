@@ -1,0 +1,80 @@
+---
+title: "@eastgold15/vite-plugin-vscode"
+description: 让 Vite 编译出 VSCode 扩展产物
+---
+
+# `@eastgold15/vite-plugin-vscode`
+
+一个 Vite 插件，把你写的 webview + extension 源文件一起打包成 VSCode 扩展产物：
+
+- `dist/extension/index.js` —— 主进程入口（Node 目标）
+- `dist/webview/**` —— webview 静态资源（HTML + JS + CSS）
+- 注入 `acquireVsCodeApi` 的类型声明到 webview
+- 读取 `package.json#contributes` 写到 webview 元数据
+
+## 安装
+
+```bash
+bun add -D @eastgold15/vite-plugin-vscode
+```
+
+## 在 vite.config.ts 里接入
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import vscode from '@eastgold15/vite-plugin-vscode';
+
+export default defineConfig({
+  plugins: [react(), vscode()],
+  build: {
+    rollupOptions: {
+      input: {
+        // webview 入口（你已有的 index.html）
+        webview: 'index.html',
+      },
+    },
+  },
+});
+```
+
+## 必需约定
+
+- 项目根有 `package.json`，且 `package.json#main` 指向扩展主进程入口
+- 主进程入口里有 `activate(context)` 导出
+- webview 入口是 `index.html`（默认），里面挂载 React/Vue 组件
+
+## 调试模式
+
+```bash
+NODE_ENV=development bun run dev
+```
+
+插件会启动一个 Vite dev server，并注入脚本让 webview 加载本地 dev server URL（`http://localhost:5173`），而不是打包后的静态资源——HMR 就能 work。
+
+`.vscode/launch.json` 配好后按 F5，VSCode 启动的 Extension Development Host 加载 dev server 里的 webview，**改前端代码直接热更新**。
+
+## 打包
+
+```bash
+NODE_ENV=production bun run build
+```
+
+产物：
+
+```
+dist/
+├── extension/
+│   └── index.js       # 主进程入口（Node 目标）
+└── webview/
+    ├── index.html
+    ├── assets/...
+    └── vscode.d.ts    # 由 vscodep gen 注入
+```
+
+`package.json#main` 默认指向 `dist/extension/index.js`，`vsce package` 直接打 `dist/` 即可。
+
+## 完整 API
+
+去 [/api](https://typedoc 生成的 API 文档) 看 `PluginOptions` 字段说明。

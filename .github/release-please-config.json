@@ -1,23 +1,33 @@
 {
   "$schema": "https://googleapis.github.io/release-please/schemas/config.json",
+  "separate-pull-requests": false,
+  "group-pull-request-title-pattern": "chore(release): 版本发布",
+  "changelog-sections": [
+    { "type": "feat", "section": "Features" },
+    { "type": "fix", "section": "Bug Fixes" },
+    { "type": "perf", "section": "Performance" },
+    { "type": "refactor", "section": "Refactors", "hidden": true },
+    { "type": "docs", "section": "Documentation", "hidden": true },
+    { "type": "test", "section": "Tests", "hidden": true },
+    { "type": "build", "section": "Build System", "hidden": true },
+    { "type": "ci", "section": "CI/CD", "hidden": true },
+    { "type": "chore", "section": "Miscellaneous", "hidden": true }
+  ],
   "packages": {
-    "packages/elogs": {
+    "packages/vscode-utils": {
       "release-type": "node",
-      "package": "@eastgold15/elogs",
-      "changelog-path": "CHANGELOG.md",
-      "changelog-sections": [
-        { "type": "feat", "section": "Features" },
-        { "type": "fix", "section": "Bug Fixes" },
-        { "type": "perf", "section": "Performance" },
-        { "type": "refactor", "section": "Refactors", "hidden": true },
-        { "type": "docs", "section": "Documentation", "hidden": true },
-        { "type": "test", "section": "Tests", "hidden": true },
-        { "type": "build", "section": "Build System", "hidden": true },
-        { "type": "ci", "section": "CI/CD", "hidden": true },
-        { "type": "chore", "section": "Miscellaneous", "hidden": true }
-      ],
-      "pull-request-title-pattern": "chore(release): v${version}",
-      "extra-files": ["packages/elogs/package.json"]
+      "package": "@eastgold15/vscode-utils",
+      "changelog-path": "CHANGELOG.md"
+    },
+    "packages/vscode-webview": {
+      "release-type": "node",
+      "package": "@eastgold15/vscode-webview",
+      "changelog-path": "CHANGELOG.md"
+    },
+    "packages/vite-plugin-vscode": {
+      "release-type": "node",
+      "package": "@eastgold15/vite-plugin-vscode",
+      "changelog-path": "CHANGELOG.md"
     }
   }
 }

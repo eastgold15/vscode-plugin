@@ -1,0 +1,59 @@
+{
+  "name": "vscode-i18n",
+  "displayName": "%displayName%",
+  "version": "0.0.0",
+  "private": true,
+  "description": "%description%",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "vscode"
+  ],
+  "license": "MIT",
+  "publisher": "tomjs",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsdown && vscode-dev",
+    "dev": "run-p dev:*",
+    "dev:i18n": "vscode-dev --watch",
+    "dev:lib": "tsdown --watch"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "tomjs.xxx.showHello",
+        "title": "%tomjs.commands.hello%",
+        "category": "%displayName%"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "%displayName%",
+      "properties": {
+        "tomjs.xxx.hello": {
+          "type": "string",
+          "default": "Hello World",
+          "description": "%description%"
+        }
+      }
+    }
+  },
+  "activationEvents": [],
+  "dependencies": {
+    "@tomjs/vscode": "workspace:*"
+  },
+  "devDependencies": {
+    "@tomjs/vscode-dev": "workspace:*",
+    "@types/vscode": "^1.75.0"
+  },
+  "engines": {
+    "node": ">=14",
+    "vscode": "^1.75.0"
+  },
+  "icon": "resources/logo.png",
+  "vsce": {
+    "dependencies": false,
+    "yarn": false
+  }
+}

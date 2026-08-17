@@ -1,0 +1,42 @@
+{
+  "name": "template-react",
+  "version": "0.0.0",
+  "private": true,
+  "description": "vite + react",
+  "publisher": "tomjs-test",
+  "type": "commonjs",
+  "main": "dist/extension/index.js",
+  "scripts": {
+    "build": "tsc && vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "hello-world.showHelloWorld",
+        "title": "Hello World: Show"
+      }
+    ]
+  },
+  "activationEvents": [],
+  "dependencies": {
+    "@vscode/webview-ui-toolkit": "^1.4.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@tomjs/vite-plugin-vscode": "workspace:^",
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3",
+    "@types/vscode": "^1.93.0",
+    "@types/vscode-webview": "^1.57.5",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@vitejs/plugin-react-swc": "^4.2.2",
+    "vite": "^7.3.1"
+  },
+  "engines": {
+    "node": ">=18",
+    "vscode": "^1.75.0"
+  }
+}

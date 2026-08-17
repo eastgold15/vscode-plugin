@@ -1,8 +1,8 @@
-import { version } from "../../../packages/elogs/package.json";
+import { version } from "../../../packages/vite-plugin-vscode/package.json";
 
-const repoUrl = "https://github.com/eastgold15/elogs";
+const repoUrl = "https://github.com/eastgold15/vscode-plugin";
 
 export const getLatestVersion = (): string => version;
 
 export const getReleaseUrl = (release: string): string =>
-  `${repoUrl}/releases/tag/elogs%40${release}`;
+  `${repoUrl}/releases/tag/vite-plugin-vscode%40${release}`;

@@ -1,0 +1,58 @@
+{
+  "name": "@tomjs/vscode-dev",
+  "version": "3.1.2",
+  "description": "Some development tools to simplify the development of vscode extensions",
+  "keywords": [
+    "vscode",
+    "extension",
+    "dev",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomjs/vscode.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Tom Gao",
+    "email": "tom@tomgao.cc"
+  },
+  "type": "commonjs",
+  "bin": {
+    "vscode-dev": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "dev": "tsdown --watch",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "@tomjs/logger": "^1.1.2",
+    "@tomjs/node": "^2.2.1",
+    "cac": "^6.7.14",
+    "chalk": "^4.1.2",
+    "chokidar": "^3.6.0",
+    "cosmiconfig": "^9.0.0"
+  },
+  "devDependencies": {
+    "@tomjs/vscode-types": "workspace:^"
+  },
+  "peerDependencies": {
+    "prettier": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "prettier": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

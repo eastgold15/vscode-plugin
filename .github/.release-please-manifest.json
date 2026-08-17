@@ -1,3 +1,5 @@
 {
-  "packages/elogs": "2.0.0"
+  "packages/vscode-utils": "0.1.0",
+  "packages/vscode-webview": "0.1.0",
+  "packages/vite-plugin-vscode": "0.1.0"
 }

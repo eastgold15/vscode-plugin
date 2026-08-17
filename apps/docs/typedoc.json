@@ -2,10 +2,13 @@
   "plugin": ["typedoc-plugin-markdown"],
   "out": "./content/api",
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["../../packages/elogs/src/index.ts"],
+  "entryPoints": [
+    "../../packages/vscode-utils/src/index.ts",
+    "../../packages/vscode-webview/src/index.ts",
+    "../../packages/vite-plugin-vscode/src/index.ts"
+  ],
   "entryPointStrategy": "expand",
-  "tsconfig": "../../packages/elogs/tsconfig.json",
-
+  "tsconfig": "./tsconfig.typedoc.json",
   "skipErrorChecking": true,
   "excludePrivate": true,
   "excludeInternal": true,

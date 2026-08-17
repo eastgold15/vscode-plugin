@@ -1,0 +1,37 @@
+import dedent from "ts-dedent";
+import type { Preferences } from "../utils";
+
+export function getExtensionHelper(preferences: Preferences) {
+  return dedent`
+  import type { Disposable, ExtensionContext, Webview } from 'vscode';
+import { getWebviewHtml } from 'virtual:vscode';
+import { window } from 'vscode';
+
+export class WebviewHelper {
+  public static setupHtml(webview: Webview, context: ExtensionContext) {
+    return getWebviewHtml({
+      serverUrl: process.env.VITE_DEV_SERVER_URL,
+      webview,
+      context,
+    });
+  }
+
+  public static setupWebviewHooks(webview: Webview, disposables: Disposable[]) {
+    webview.onDidReceiveMessage(
+      (message: any) => {
+        const command = message.command;
+        const text = message.text;
+        console.log(\`command: \${command} \`);
+        switch (command) {
+          case 'hello':
+            window.showInformationMessage(text);
+        }
+      },
+      undefined,
+      disposables,
+    );
+  }
+}
+
+  `;
+}

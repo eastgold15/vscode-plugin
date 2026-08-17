@@ -1,17 +1,18 @@
 name: release-please
 
-# release-please 监听 main 推送,自动检测 conventional commits 开/更新 Release PR。
-# Release PR 合并时,release-please 会:
-#   1) 打 tag(格式: elogs-v${version})
+# release-please 监听 main 推送，自动检测 conventional commits 开/更新 Release PR。
+# Release PR 合并时，release-please 会：
+#   1) 为每个有变更的包打 tag（格式: <package>-v${version}）
 #   2) 创建 GitHub release
 #   3) 更新 .github/.release-please-manifest.json
-#   4) 更新 packages/elogs/package.json + CHANGELOG.md
+#   4) 更新对应 packages/*/package.json + CHANGELOG.md
+#   5) **自动 npm publish**（前提：config-file 里有 `packages` block）
 #
-# ⚠ release-please **不会**自动 `npm publish`,需要我们在 release_created=true
-#    的时候自己跑(走 NPMTOKEN secret 路径)。
+# 所以 step `Release please` 直接吃 NPM_TOKEN 去 publish；
+# 我们这里**不再**写手动 publish step，否则会双发。
 #
-# token 放在 https://github.com/eastgold15/elogs/settings/secrets/actions 里,
-# 名字: NPMTOKEN,值: `npm token create` 生成的 publish token(需 Bypass 2FA)。
+# token 放在 https://github.com/eastgold15/vscode-plugin/settings/secrets/actions 里，
+# 名字: NPMTOKEN，值: `npm token create` 生成的 publish token（需 Bypass 2FA）。
 on:
   push:
     branches: [main]
@@ -33,8 +34,17 @@ jobs:
         with:
           bun-version: "1.3"
 
-      # release-please action 内部会跑 `npm publish` 吗?答:**不会**。
-      # 它只负责打 release/写 manifest,真正的 npm publish 走下面这步。
+      - name: 装 node（给 release-please 内置的 npm publish 用）
+        uses: actions/setup-node@v4 # v4
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      # 编译产物：release-please 不会跑 build，但 publish 之前 dist/ 必须在。
+      # 每次 push 都要编一遍，build 是 turbo 自带缓存所以不慢。
+      - name: 编译全部包
+        run: bun run build
+
       - name: Release please
         uses: googleapis/release-please-action@v4 # v4
         id: release
@@ -45,38 +55,8 @@ jobs:
           manifest-file: .github/.release-please-manifest.json
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      # ---- 以下仅在 release_created=true(刚创建了一个 release)时跑 ----
-      # 注意:每次 push 都会跑 release-please,但只有当 release-please 真的
-      # 创建了一个 release(merge Release PR 时)才会触发发布。日常的
-      # "开/更新 Release PR" 不会触发 npm publish。
-
-      - name: 装 node(给 npm publish 用)
-        if: ${{ steps.release.outputs.release_created }}
-        uses: actions/setup-node@v4 # v4
-        with:
-          node-version: "24"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: 安装 monorepo 根依赖
-        if: ${{ steps.release.outputs.release_created }}
-        run: bun install --frozen-lockfile
-
-      - name: 编译 elogs 包
-        if: ${{ steps.release.outputs.release_created }}
-        working-directory: packages/elogs
-        run: bun run build
-
-      - name: 发布 elogs 到 npm(带 provenance)
-        if: ${{ steps.release.outputs.release_created }}
-        working-directory: packages/elogs
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMTOKEN }}
-        # `--provenance` 仍然有效 —— npm 用 NODE_AUTH_TOKEN 验证身份,
-        # 同时用 OIDC 拿 GitHub repo 信息写 provenance
-        run: npm publish --provenance --access public
-
-      - name: 打印 release-please 输出(便于排查)
-        if: ${{ steps.release.outputs.release_created }}
+      - name: 打印 release-please 输出（便于排查）
+        if: ${{ always() }}
         env:
           RP_OUT: ${{ toJson(steps.release.outputs) }}
         run: echo "$RP_OUT"

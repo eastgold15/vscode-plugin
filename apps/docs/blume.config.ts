@@ -84,13 +84,13 @@ export default defineConfig({
         root: "content",
         type: "filesystem",
       },
-      // Elogs's GitHub releases become the changelog timeline at /changelog
+      // 仓库的 GitHub releases 会变成 /changelog 的时间线
       // (each release is a type:changelog entry). Set GITHUB_TOKEN in CI to
       // avoid rate limits; a failed fetch degrades to an empty changelog.
       {
         owner: "eastgold15",
         prefix: "changelog",
-        repo: "elogs",
+        repo: "vscode-plugin",
         type: "github-releases",
       },
     ],
@@ -98,17 +98,16 @@ export default defineConfig({
   deployment: {
     adapter: "vercel",
   },
-  description:
-    "The logger for Elysia.js — simple and easy to use, beautiful and powerful",
+  description: "VSCode 扩展开发工具链：脚手架 CLI、Vite 插件与运行时库",
   github: {
     owner: "eastgold15",
-    repo: "elogs",
+    repo: "vscode-plugin",
   },
   lastModified: true,
   logo: {
     href: "/",
     image: "/icon.png",
-    text: "Elogs",
+    text: "VSCode Plugin",
   },
   markdown: {
     codeBlocks: {
@@ -213,5 +212,5 @@ export default defineConfig({
       },
     },
   },
-  title: "Elogs",
+  title: "VSCode Plugin",
 });

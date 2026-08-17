@@ -1,13 +1,25 @@
 name: publish
 
-# 手动 publish workflow:把当前 packages/elogs 发到 npm。
+# 手动 publish workflow：把指定的包发到 npm。
 # 当前走 NPMTOKEN secret 路径(临时 fallback);后续如果
 # 在 npmjs.com 上配了 Trusted Publisher,可以无 token。
 #
-# token 放在 https://github.com/eastgold15/elogs/settings/secrets/actions 里,
+# 常规发版走 release-please.yml（合并 Release PR 自动发），这个 workflow
+# 只用于补发：某个包发布失败、或需要单独重发一次时手动触发。
+#
+# token 放在 https://github.com/eastgold15/vscode-plugin/settings/secrets/actions 里,
 # 名字: NPMTOKEN,值: `npm token create` 生成的 publish token。
 on:
   workflow_dispatch:
+    inputs:
+      package:
+        description: 要发布的包
+        required: true
+        type: choice
+        options:
+          - packages/vscode-utils
+          - packages/vscode-webview
+          - packages/vite-plugin-vscode
 
 # 最低权限
 permissions:
@@ -38,12 +50,12 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPMTOKEN }}
         run: bun install --frozen-lockfile
 
-      - name: 编译 elogs 包
-        working-directory: packages/elogs
+      # 走 turbo 全量构建，把被发布包依赖的其它 workspace 包一起编出来
+      - name: 编译全部包
         run: bun run build
 
-      - name: 发布 elogs 到 npm(带 provenance)
-        working-directory: packages/elogs
+      - name: 发布 ${{ inputs.package }} 到 npm(带 provenance)
+        working-directory: ${{ inputs.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPMTOKEN }}
         # `--provenance` 仍然有效 —— npm 用 NODE_AUTH_TOKEN 验证身份,

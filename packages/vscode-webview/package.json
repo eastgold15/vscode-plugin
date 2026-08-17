@@ -1,0 +1,66 @@
+{
+  "name": "@eastgold15/vscode-webview",
+  "version": "0.1.0",
+  "description": "优化 webview 页面与 vscode 扩展之间的 postMessage 通信",
+  "keywords": [
+    "vscode",
+    "extension",
+    "webview",
+    "postmessage"
+  ],
+  "homepage": "https://github.com/eastgold15/vscode-plugin",
+  "bugs": {
+    "url": "https://github.com/eastgold15/vscode-plugin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eastgold15/vscode-plugin.git",
+    "directory": "packages/vscode-webview"
+  },
+  "license": "MIT",
+  "author": "eastgold15 <1960825664@qq.com>",
+  "contributors": [
+    "Tom Gao <tom@tomgao.cc> (原 @tomjs/vscode-webview 作者)"
+  ],
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "clean": "git clean -fdx .turbo dist node_modules",
+    "dev": "tsdown --watch",
+    "test": "bun test",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.3.14",
+    "@types/vscode-webview": "^1.57.5",
+    "tsdown": "^0.22.14",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

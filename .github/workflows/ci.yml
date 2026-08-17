@@ -19,10 +19,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Windows is the production platform — the server shells out to es.exe,
-        # which only exists there. Ubuntu is kept as a canary: the pure functions
-        # must stay platform-independent, and the es.exe-dependent tests skip
-        # themselves when the binary is absent rather than failing.
+        # 在 Windows 与 Linux 上各跑一遍 CI：包构建路径（路径分隔符、native module）
+        # 在两个平台都得过，VSCode 扩展本体的运行时兼容性是 macOS/Linux 同样的 Node 16+
+        # 抽象层保证，开发期验证 Windows 与 Linux 已覆盖 90% 失败面。
         os: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

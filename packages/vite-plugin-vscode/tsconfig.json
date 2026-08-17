@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": ["node"]
+  },
+  "references": [
+    {
+      "path": "./tsconfig.web.json"
+    }
+  ],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "*.ts"],
+  "exclude": ["src/webview/client.ts"]
+}

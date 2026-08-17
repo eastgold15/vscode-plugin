@@ -29,7 +29,10 @@
         "useIterableCallbackReturn": "off",
         "noConfusingVoidType": "off",
         "noAlert": "off",
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        "useAwait": "off",
+        "noReturnAssign": "off",
+        "noEmptyBlockStatements": "off"
       },
       "style": {
         "useDefaultParameterLast": "off",
@@ -42,7 +45,9 @@
         "noParameterProperties": "off",
         "useConsistentMemberAccessibility": "off",
         "useImportType": "off",
-        "useCollapsedElseIf": "off"
+        "useCollapsedElseIf": "off",
+        "useDefaultSwitchClause": "off",
+        "useDestructuring": "off"
       },
       "correctness": {
         "noUnusedVariables": "off",

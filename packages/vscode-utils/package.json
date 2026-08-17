@@ -47,7 +47,7 @@
     "build": "tsdown",
     "clean": "git clean -fdx .turbo dist node_modules",
     "dev": "tsdown --watch",
-    "test": "bun test",
+    "test": "bun test --pass-with-no-tests",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {

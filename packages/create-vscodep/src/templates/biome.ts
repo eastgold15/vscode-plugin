@@ -1,7 +1,7 @@
-import dedent from "ts-dedent";
+import { outdent } from "@visulima/string";
 
 export function getBiomeConfig() {
-  return dedent`
+  return outdent`
     {
       "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
       "vcs": {

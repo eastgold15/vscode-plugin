@@ -1,7 +1,6 @@
 export const dependencies = {
-  "@tomjs/node": "^2.2.3",
-  "@tomjs/vscode": "^2.5.0",
-  "@tomjs/vscode-webview": "^2.0.2",
+  "@eastgold15/vscode-utils": "^0.1.0",
+  "@eastgold15/vscode-webview": "^0.1.0",
   "@types/node": "^25.0.8",
   "@vscode/webview-ui-toolkit": "^1.4.0",
   dayjs: "^1.11.19",
@@ -10,8 +9,7 @@ export const dependencies = {
 };
 
 export const devDependencies = {
-  "@tomjs/tsconfig": "^3.2.0",
-  "@tomjs/vite-plugin-vscode": "^7.0.0",
+  "@eastgold15/vite-plugin-vscode": "^0.1.0",
   "@types/node": "^20.19.28",
   "@types/react": "^19.2.8",
   "@types/react-dom": "^19.2.3",

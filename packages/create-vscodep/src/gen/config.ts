@@ -1,4 +1,4 @@
-import fs from "node:fs";
+import { isAccessible } from "@visulima/fs";
 import { cosmiconfig } from "cosmiconfig";
 import type { GenOptions } from "./types";
 
@@ -25,7 +25,7 @@ export async function getConfig(
   });
 
   if (opts.config) {
-    if (!fs.existsSync(opts.config)) {
+    if (!isAccessible(opts.config)) {
       return {};
     }
 

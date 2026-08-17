@@ -1,4 +1,4 @@
-import dedent from "ts-dedent";
+import { outdent } from "@visulima/string";
 import type { Preferences } from "../utils";
 
 export function getViteConfig(preferences: Preferences) {
@@ -15,13 +15,13 @@ export function getViteConfig(preferences: Preferences) {
     pluginConfig = "vue(),";
   }
 
-  return dedent`
+  return outdent`
     import { defineConfig } from 'vite';
-    import vscode from '@tomjs/vite-plugin-vscode';
+    import vscode from '@eastgold15/vite-plugin-vscode';
     import { fileURLToPath, URL } from 'node:url';
     import react from '@vitejs/plugin-react-swc';
     ${pluginImport}
-
+  
     export default defineConfig({
       plugins: [
         ${pluginConfig}

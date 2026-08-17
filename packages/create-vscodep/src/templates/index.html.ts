@@ -1,10 +1,10 @@
-import dedent from "ts-dedent";
+import { outdent } from "@visulima/string";
 import type { Preferences } from "../utils";
 
 export function getIndexHtml(preferences: Preferences) {
   const { framework } = preferences;
 
-  return dedent`
+  return outdent`
     <!DOCTYPE html>
     <html lang="en">
       <head>

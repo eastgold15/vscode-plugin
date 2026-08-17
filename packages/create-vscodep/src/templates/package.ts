@@ -1,64 +1,76 @@
-import dedent from "ts-dedent";
-import { dependencies, devDependencies } from "../deps";
+import { outdent } from "@visulima/string";
+import { bucketVersions, type PackageName, type VersionGetter } from "../deps";
 import type { Preferences } from "../utils";
 
-export function getPackageJson(preferences: Preferences) {
-  const { projectName, framework, linter, packageManager } = preferences;
+/**
+ * 把 JSON.stringify 的多行输出缩进成 `package.json` 模板里 6 空格的样子。
+ */
+function inline(record: Record<string, string>): string {
+  return JSON.stringify(record, null, 2).replace(/\n/g, "\n      ");
+}
 
-  const deps: Record<string, string> = {};
-  const devDeps: Record<string, string> = {};
+export function getPackageJson(
+  preferences: Preferences,
+  versions: VersionGetter
+) {
+  const { projectName, framework, linter } = preferences;
 
-  // 核心依赖
-  deps["@vscode/webview-ui-toolkit"] =
-    dependencies["@vscode/webview-ui-toolkit"];
+  // === 列包名 = 声明分类，不再用 if/else 维护 ===
+  const coreDeps: PackageName[] = ["@vscode/webview-ui-toolkit"];
 
-  if (framework === "react") {
-    deps.react = dependencies.react;
-    deps["react-dom"] = dependencies["react-dom"];
-    devDeps["@types/react"] = devDependencies["@types/react"];
-    devDeps["@types/react-dom"] = devDependencies["@types/react-dom"];
-  } else if (framework === "vue") {
-    deps.vue = dependencies.vue;
-  }
+  const coreDevDeps: PackageName[] = [
+    "@eastgold15/vite-plugin-vscode",
+    "@types/vscode",
+    "@types/vscode-webview",
+    "vite",
+  ];
 
-  // 核心开发依赖
-  devDeps["@tomjs/tsconfig"] = devDependencies["@tomjs/tsconfig"];
-  devDeps["@tomjs/vite-plugin-vscode"] =
-    devDependencies["@tomjs/vite-plugin-vscode"];
-  devDeps["@types/vscode"] = devDependencies["@types/vscode"];
-  devDeps["@types/vscode-webview"] = devDependencies["@types/vscode-webview"];
-  devDeps.vite = devDependencies.vite;
+  const corePeerDeps: PackageName[] = [
+    "@eastgold15/vscode-utils",
+    "@eastgold15/vscode-webview",
+  ];
 
-  if (framework === "react") {
-    devDeps["@vitejs/plugin-react"] = devDependencies["@vitejs/plugin-react"];
-  } else if (framework === "vue") {
-    devDeps["@vitejs/plugin-vue"] = devDependencies["@vitejs/plugin-vue"];
-  }
+  const frameworkDeps: readonly PackageName[] =
+    framework === "react"
+      ? ["react", "react-dom"]
+      : framework === "vue"
+        ? ["vue"]
+        : [];
 
-  // Linter
-  if (linter === "ESLint") {
-    devDeps.eslint = devDependencies.eslint;
-  } else if (linter === "Biome") {
-    devDeps["@biomejs/biome"] = devDependencies["@biomejs/biome"];
-  } else if (linter === "ultracite") {
-    devDeps.ultracite = devDependencies.ultracite;
-  }
+  const frameworkDevDeps: readonly PackageName[] =
+    framework === "react"
+      ? ["@types/react", "@types/react-dom", "@vitejs/plugin-react"]
+      : framework === "vue"
+        ? ["@vitejs/plugin-vue"]
+        : [];
 
+  // Linter 已彻底移除 ESLint——只剩 Biome / ultracite / None
+  const linterDevDeps: readonly PackageName[] =
+    linter === "Biome"
+      ? ["@biomejs/biome"]
+      : linter === "ultracite"
+        ? ["ultracite"]
+        : [];
+
+  const buckets = bucketVersions(versions, {
+    dependencies: [...coreDeps, ...frameworkDeps],
+    devDependencies: [...coreDevDeps, ...frameworkDevDeps, ...linterDevDeps],
+    peerDependencies: corePeerDeps,
+  });
+
+  // scripts 仍手写（不属于版本号分类）
   const scripts: Record<string, string> = {
     build: "tsc && vite build",
     dev: "vite",
     preview: "vite preview",
   };
-
-  if (linter === "ESLint") {
-    scripts.lint = "eslint .";
-    scripts["lint:fix"] = "eslint . --fix";
-  } else if (linter === "Biome") {
+  if (linter === "Biome") {
     scripts.lint = "biome check .";
     scripts["lint:fix"] = "biome check . --write";
   }
+  // ultracite 自身不带 npm scripts，调用方读官方 README 即可
 
-  return dedent`
+  return outdent`
     {
       "publisher": "your-publisher-name",
       "name": "${projectName}",
@@ -80,9 +92,10 @@ export function getPackageJson(preferences: Preferences) {
           }
         ]
       },
-      "scripts": ${JSON.stringify(scripts, null, 2).replace(/\n/g, "\n      ")},
-      "dependencies": ${JSON.stringify(deps, null, 2).replace(/\n/g, "\n      ")},
-      "devDependencies": ${JSON.stringify(devDeps, null, 2).replace(/\n/g, "\n      ")}
+      "scripts": ${inline(scripts)},
+      "dependencies": ${inline(buckets.dependencies)},
+      "devDependencies": ${inline(buckets.devDependencies)},
+      "peerDependencies": ${inline(buckets.peerDependencies)}
     }
   `;
 }

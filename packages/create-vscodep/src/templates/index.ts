@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import type { VersionGetter } from "../deps";
 import type { Preferences } from "../utils";
 import { getBiomeConfig } from "./biome";
-import { getESLintConfig } from "./eslint";
 import { getExtensionIndex } from "./extension";
 import { getExtensionHelper } from "./extension.helper";
 import { getExtensionPanel } from "./extension.panel";
@@ -26,7 +26,10 @@ import {
 } from "./vscode";
 import { getVueApp, getVueMain, getVueShims } from "./vue";
 
-export async function render(preferences: Preferences) {
+export async function render(
+  preferences: Preferences,
+  versions: VersionGetter
+) {
   const projectDir = preferences.dir;
 
   // 创建目录结构
@@ -38,7 +41,7 @@ export async function render(preferences: Preferences) {
   // 写入 package.json
   await fs.writeFile(
     path.join(projectDir, "package.json"),
-    getPackageJson(preferences)
+    getPackageJson(preferences, versions)
   );
 
   // 写入 vite.config.ts
@@ -134,12 +137,7 @@ export async function render(preferences: Preferences) {
   }
 
   // 写入 Linter 配置
-  if (preferences.linter === "ESLint") {
-    await fs.writeFile(
-      path.join(projectDir, "eslint.config.mjs"),
-      getESLintConfig()
-    );
-  } else if (preferences.linter === "Biome") {
+  if (preferences.linter === "Biome") {
     await fs.writeFile(path.join(projectDir, "biome.json"), getBiomeConfig());
   } else if (preferences.linter === "ultracite") {
     await fs.writeFile(
@@ -226,7 +224,7 @@ function getUtilsIndex() {
 
 function getUtilsVscode(preferences: Preferences) {
   return `
-import { WebviewApi } from '@tomjs/vscode-webview';
+import { WebviewApi } from '@eastgold15/vscode-webview';
 
 // Exports class singleton to prevent multiple invocations of acquireVsCodeApi.
 export const vscode = new WebviewApi<string>();

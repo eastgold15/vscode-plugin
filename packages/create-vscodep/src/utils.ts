@@ -6,7 +6,7 @@ export type PackageManager = "bun" | "npm" | "pnpm" | "yarn";
 
 export type Framework = "react" | "vue";
 
-export type Linter = "ESLint" | "Biome" | "None" | "ultracite";
+export type Linter = "Biome" | "None" | "ultracite";
 
 export interface Preferences {
   dir: string;

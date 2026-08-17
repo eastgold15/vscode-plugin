@@ -1,8 +1,8 @@
-import dedent from "ts-dedent";
+import { outdent } from "@visulima/string";
 import type { Preferences } from "../utils";
 
 export function getVSCodeSettings(preferences: Preferences) {
-  return dedent`
+  return outdent`
     {
       "editor.formatOnSave": true,
       "editor.defaultFormatter": "${preferences.linter === "Biome" ? "biomejs.biome" : "esbenp.prettier-vscode"}",
@@ -27,7 +27,7 @@ export function getVSCodeExtensions(preferences: Preferences) {
     "bradlc.vscode-tailwindcss",
   ];
 
-  return dedent`
+  return outdent`
     {
       "recommendations": ${JSON.stringify(extensions, null, 2).replace(/\n/g, "\n      ")}
     }
@@ -37,12 +37,12 @@ export function getVSCodeExtensions(preferences: Preferences) {
 export function getVSCodeLaunch(preferences: Preferences) {
   const { meta } = preferences;
 
-  return dedent`
+  return outdent`
    // A launch configuration that compiles the extension and then opens it inside a new window
-// Use IntelliSense to learn about possible attributes.
-// Hover to view descriptions of existing attributes.
-// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  {
   "version": "0.2.0",
   "configurations": [
     {
@@ -71,15 +71,15 @@ export function getVSCodeLaunch(preferences: Preferences) {
       "preLaunchTask": "npm: build"
     }
   ]
-}
+  }
   `;
 }
 
 export function getVSCodeTasks(preferences: Preferences) {
-  return dedent`
-// See https://go.microsoft.com/fwlink/?LinkId=733558
-// for the documentation about the tasks.json format
-{
+  return outdent`
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  {
   "version": "2.0.0",
   "tasks": [
     {
@@ -121,6 +121,6 @@ export function getVSCodeTasks(preferences: Preferences) {
       "problemMatcher": []
     }
   ]
-}
+  }
   `;
 }

@@ -1,7 +1,7 @@
-import dedent from "ts-dedent";
+import { outdent } from "@visulima/string";
 
 export function getUltraciteConfig() {
-  return dedent`
+  return outdent`
    {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
   "extends": ["ultracite/core", "ultracite/react"],
@@ -104,7 +104,7 @@ export function getUltraciteConfig() {
       }
     }
   ]
-}
-
+  }
+  
   `;
 }

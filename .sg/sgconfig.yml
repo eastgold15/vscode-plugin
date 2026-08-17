@@ -1,0 +1,6 @@
+ruleDirs:
+  - C:\Users\boer\Documents\GitHub\vscode-plugin\.sg\rules
+testConfigs:
+  - testDir: C:\Users\boer\Documents\GitHub\vscode-plugin\.sg\rule-tests
+utilDirs:
+  - C:\Users\boer\Documents\GitHub\vscode-plugin\.sg\utils

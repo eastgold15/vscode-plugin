@@ -1,7 +1,7 @@
-import dedent from "ts-dedent";
+import { outdent } from "@visulima/string";
 
 export function getGitignore() {
-  return dedent`
+  return outdent`
     node_modules
     dist
     .DS_Store

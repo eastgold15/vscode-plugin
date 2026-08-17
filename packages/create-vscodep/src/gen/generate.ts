@@ -1,7 +1,9 @@
-import fs from "node:fs";
-import path from "node:path";
+import { readdir } from "node:fs/promises";
+import { green } from "@visulima/colorize";
+import { VisulimaError } from "@visulima/error";
+import { isAccessible } from "@visulima/fs";
+import { join } from "@visulima/path";
 import chokidar from "chokidar";
-import { colors } from "consola/utils";
 import type { IExtensionManifest } from "./manifest";
 import type { GenOptions } from "./types";
 import {
@@ -39,9 +41,7 @@ function createWatcher(
 
   watcher.on("ready", async () => {
     ready = true;
-    logger.info(
-      `watching: ${watchPaths.map((s) => colors.green(s)).join(", ")}`
-    );
+    logger.info(`watching: ${watchPaths.map((s) => green(s)).join(", ")}`);
     await callback();
   });
 
@@ -54,7 +54,14 @@ function createWatcher(
     try {
       await callback();
     } catch (e) {
-      logger.error(e instanceof Error ? e.message : e);
+      const err =
+        e instanceof Error
+          ? e
+          : new VisulimaError({
+              message: String(e),
+              name: "GenWatchError",
+            });
+      logger.error(err.message);
     }
   });
 }
@@ -66,7 +73,7 @@ export async function generateCode(options: GenOptions) {
     dtsName: options.dtsName ?? "vscode.d.ts",
     lang: options.lang ?? "en",
   };
-  opts.locales = path.join(opts.cwd, options.locales ?? "locales");
+  opts.locales = join(opts.cwd, options.locales ?? "locales");
 
   logger.debug("gen options", opts);
 
@@ -93,7 +100,7 @@ export async function generateCode(options: GenOptions) {
   }
 
   createWatcher(opts.locales, () => genNls(opts, parts, mergeDts));
-  createWatcher(path.join(opts.cwd, "package.json"), () =>
+  createWatcher(join(opts.cwd, "package.json"), () =>
     genPackageDts(opts, parts, mergeDts)
   );
 }
@@ -110,17 +117,18 @@ async function genNls(
   mergeDts: () => Promise<void>
 ) {
   const localePath = opts.locales as string;
-  if (!fs.existsSync(localePath)) {
+  if (!isAccessible(localePath)) {
     return;
   }
-  const files = fs.readdirSync(localePath).filter((s) => s.endsWith(JSON_EXT));
+  const all = await readdir(localePath);
+  const files = all.filter((s) => s.endsWith(JSON_EXT));
   if (files.length === 0) {
     return;
   }
 
   const defaultLocale: Record<string, string> = {
     ...readJsonSync<Record<string, string>>(
-      path.join(localePath, `${opts.lang}${JSON_EXT}`)
+      join(localePath, `${opts.lang}${JSON_EXT}`)
     ),
   };
 
@@ -130,9 +138,7 @@ async function genNls(
     files.map(async (name) => {
       const locale = name.slice(0, -JSON_EXT.length);
       const messages: Record<string, string> = {
-        ...(await readJson<Record<string, string>>(
-          path.join(localePath, name)
-        )),
+        ...(await readJson<Record<string, string>>(join(localePath, name))),
       };
       for (const key of Object.keys(defaultLocale)) {
         messages[key] = messages[key] || defaultLocale[key];
@@ -144,17 +150,15 @@ async function genNls(
         locale === opts.lang
           ? "package.nls.json"
           : `package.nls.${locale.toLowerCase()}${JSON_EXT}`;
-      await writeJson(path.join(opts.cwd, fileName), messages);
+      await writeJson(join(opts.cwd, fileName), messages);
     })
   );
 
-  logger.success(`生成 ${colors.green("package.nls.json")}`);
+  logger.success(`生成 ${green("package.nls.json")}`);
 
   parts.nls = buildNlsDts(nlsKeys);
   await mergeDts();
-  logger.success(
-    `生成 ${colors.green(opts.dtsName as string)} [package.nls.json]`
-  );
+  logger.success(`生成 ${green(opts.dtsName as string)} [package.nls.json]`);
 }
 
 /**
@@ -258,7 +262,7 @@ async function genPackageDts(
   mergeDts: () => Promise<void>
 ) {
   const pkg = await readJson<IExtensionManifest>(
-    path.join(opts.cwd, "package.json")
+    join(opts.cwd, "package.json")
   );
 
   const blocks = [getCommandDts(pkg, opts), getViewDts(pkg)].filter(Boolean);
@@ -267,5 +271,5 @@ async function genPackageDts(
     : "";
 
   await mergeDts();
-  logger.success(`生成 ${colors.green(opts.dtsName as string)} [package.json]`);
+  logger.success(`生成 ${green(opts.dtsName as string)} [package.json]`);
 }

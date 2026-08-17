@@ -1,0 +1,6 @@
+id: outdent-template-tag
+language: typescript
+rule:
+  pattern: outdent(`$$$BODY`)
+fix: |-
+  outdent`$$$BODY`

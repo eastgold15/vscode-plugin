@@ -1,17 +1,17 @@
 #!/usr/bin/env node
-import { defineCommand, runMain } from "citty";
+import { createCerebro } from "@visulima/cerebro";
 import { createCommand } from "./commands/create";
 import { genCommand } from "./commands/gen";
+import { packageName, packageVersion } from "./constants";
 
-const main = defineCommand({
-  meta: {
-    description: "VSCode 扩展开发工具链：脚手架与代码生成",
-    name: "vscodep",
-  },
-  subCommands: {
-    create: createCommand,
-    gen: genCommand,
-  },
+// cerebro 要求 logger 是 Node `Console` 类型（`logger: console`），pail 不兼容，
+// 所以这里走 cerebro 默认 console；`gen` 子命令自己持有 pail 实例。
+const cli = createCerebro(packageName, {
+  packageName,
+  packageVersion,
 });
 
-runMain(main);
+cli.addCommand(createCommand);
+cli.addCommand(genCommand);
+
+await cli.run();

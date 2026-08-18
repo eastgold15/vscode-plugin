@@ -15,9 +15,3 @@
 ## Functions
 
 - [useVSCodePlugin](functions/useVSCodePlugin.md)
-
-## References
-
-### default
-
-Renames and re-exports [useVSCodePlugin](functions/useVSCodePlugin.md)

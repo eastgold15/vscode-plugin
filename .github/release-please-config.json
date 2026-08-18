@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
-  "separate-pull-requests": false,
-  "group-pull-request-title-pattern": "chore(release): 版本发布",
+  "separate-pull-requests": true,
+  "group-pull-request-title-pattern": "chore(${scope}): release ${component} v${version}",
   "changelog-sections": [
     { "type": "feat", "section": "Features" },
     { "type": "fix", "section": "Bug Fixes" },

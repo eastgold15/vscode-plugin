@@ -12,7 +12,6 @@ export interface Preferences {
   dir: string;
   framework: Framework;
   git: boolean;
-  linter: Linter;
   meta: {
     commandName: string;
     viewName: string;
@@ -29,7 +28,7 @@ export class PreferencesClass {
   dir = "";
   packageManager: PackageManager = "bun";
   framework: Framework = "react";
-  linter: Linter = "None";
+
   runtime: "Bun" | "Node.js" = "Bun";
   git = true;
   vscode = true;

@@ -1,21 +1,39 @@
 ---
 import data from "blume:data";
 import PageLayout from "blume/components/layout/PageLayout.astro";
-import "../styles/home.css";
-
-import Demo from "../components/home/demo.astro";
-import Faq from "../components/home/faq.astro";
-import Features from "../components/home/features.astro";
-import Footer from "../components/home/footer.astro";
-import Hero from "../components/home/hero.astro";
-import { getLatestVersion, getReleaseUrl } from "../lib/version";
 
 const { config } = data;
-const version = getLatestVersion();
-const releaseUrl = getReleaseUrl(version);
-const title = "The logger for Elysia.js | Elogs";
+const title = "VSCode 扩展开发工具链 | VSCode Plugin";
 const description =
-  "Structured, colorful request logging for Elysia.js on Bun — filtering, file rotation, request context, and custom formats in one plugin.";
+  "用 vscodep-cli 一行命令搭出 VSCode 扩展项目。Vite + React/Vue + ultracite。配套 vite-plugin-vscode、vscode-utils、vscode-webview 覆盖构建与运行时。";
+
+const packages = [
+  {
+    description: "一行命令搭出扩展项目，集成 React/Vue + ultracite/Biome。",
+    href: "/docs/create-vscodep/quickstart",
+    name: "@eastgold15/vscodep-cli",
+    tag: "CLI",
+  },
+  {
+    description: "Vite 插件把 webview + extension 一起打包，HMR + prod build。",
+    href: "/docs/libs/vite-plugin-vscode",
+    name: "@eastgold15/vite-plugin-vscode",
+    tag: "构建",
+  },
+  {
+    description: "主进程工具集：i18n 收窄、配置读写、上下文管理。",
+    href: "/docs/libs/vscode-utils",
+    name: "@eastgold15/vscode-utils",
+    tag: "运行时",
+  },
+  {
+    description:
+      "WebviewApi 包装 acquireVsCodeApi，类型化 postMessage + 状态。",
+    href: "/docs/libs/vscode-webview",
+    name: "@eastgold15/vscode-webview",
+    tag: "运行时",
+  },
+];
 ---
 
 <PageLayout
@@ -37,42 +55,103 @@ const description =
   siteUrl={config.site}
   themeMode={config.theme.mode}
 >
-  <div
-    class="mx-auto mt-16 grid max-w-7xl gap-16 px-4 sm:mt-24 sm:gap-24 md:gap-32"
-  >
-    <div class="grid gap-8 sm:gap-20">
-      <Hero releaseUrl={releaseUrl} version={version} />
-      <Demo />
-    </div>
-    <div
-      aria-hidden="true"
-      class="-my-8 sm:-my-12 md:-my-16 h-px w-full bg-linear-to-r from-transparent via-border to-transparent"
-    ></div>
-    <Features />
-    <div
-      aria-hidden="true"
-      class="-my-8 sm:-my-12 md:-my-16 h-px w-full bg-linear-to-r from-transparent via-border to-transparent"
-    ></div>
-    <Faq />
-    <Footer />
-  </div>
-</PageLayout>
+  <main class="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+    {/* Hero */}
+    <section class="text-center">
+      <h1 class="font-bold text-4xl tracking-tight sm:text-5xl">
+        VSCode 扩展开发工具链
+      </h1>
+      <p
+        class="mx-auto mt-6 max-w-2xl text-balance text-lg text-muted-foreground"
+      >
+        一行命令搭出 VSCode 扩展项目。Vite + React/Vue + ultracite，配套
+        vite-plugin 与运行时库覆盖构建到运行全链路。
+      </p>
 
-<script>
-  // Below-the-fold sections marked `.t-stagger[data-reveal]` play their
-  // staggered entrance when scrolled into view (hero triggers its own on load).
-  const observer = new IntersectionObserver(
-    (entries) => {
-      for (const entry of entries) {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-shown");
-          observer.unobserve(entry.target);
-        }
-      }
-    },
-    { threshold: 0.2 }
-  );
-  for (const section of document.querySelectorAll(".t-stagger[data-reveal]")) {
-    observer.observe(section);
-  }
-</script>
+      {/* 安装命令 */}
+      <pre
+        class="mx-auto mt-10 inline-block rounded-lg border bg-muted/50 px-5 py-3 font-mono text-sm sm:text-base"
+      ><code>bunx @eastgold15/vscodep-cli create my-extension</code></pre>
+
+      {/* CTA */}
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <a
+          class="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 font-medium text-primary-foreground text-sm transition-colors hover:bg-primary/90"
+          href="/docs/introduction"
+          >阅读文档 →</a
+        >
+        <a
+          class="inline-flex items-center justify-center rounded-md border border-input bg-background px-5 py-2.5 font-medium text-sm transition-colors hover:bg-accent"
+          href="https://github.com/eastgold15/vscode-plugin"
+          rel="noopener noreferrer"
+          target="_blank"
+          >GitHub →</a
+        >
+      </div>
+    </section>
+
+    {/* 4 包卡片 */}
+    <section class="mt-24">
+      <h2 class="text-center font-semibold text-2xl tracking-tight">4 个包</h2>
+      <p
+        class="mx-auto mt-3 max-w-xl text-center text-muted-foreground text-sm"
+      >
+        按职责切三段：脚手架 / 构建 / 运行时。
+      </p>
+
+      <div class="mt-10 grid gap-4 sm:grid-cols-2">
+        {packages.map((pkg) => (
+            <a
+              class="group block rounded-lg border bg-card p-5 transition-colors hover:border-foreground/30"
+              href={pkg.href}
+            >
+              <div class="flex items-center justify-between gap-2">
+                <code class="font-mono text-sm">{pkg.name}</code>
+                <span class="rounded-full bg-muted px-2 py-0.5 text-muted-foreground text-xs">
+                  {pkg.tag}
+                </span>
+              </div>
+              <p class="mt-3 text-muted-foreground text-sm">
+                {pkg.description}
+              </p>
+            </a>
+          ))}
+      </div>
+    </section>
+
+    {/* 5 分钟起步 */}
+    <section class="mt-24">
+      <h2 class="text-center font-semibold text-2xl tracking-tight">
+        5 分钟起步
+      </h2>
+      <div
+        class="mx-auto mt-8 max-w-2xl rounded-lg border bg-muted/30 p-6 font-mono text-sm leading-relaxed"
+      >
+        <div><span class="text-muted-foreground"># 1.</span> 创建项目</div>
+        <div class="mt-1">
+          <span class="text-foreground">$</span>
+          bunx @eastgold15/vscodep-cli create my-extension
+        </div>
+        <div class="mt-4">
+          <span class="text-muted-foreground"># 2.</span>
+          装依赖
+        </div>
+        <div class="mt-1">
+          <span class="text-foreground">$</span>
+          cd my-extension && bun install
+        </div>
+        <div class="mt-4">
+          <span class="text-muted-foreground"># 3.</span>
+          打开
+        </div>
+        <div class="mt-1">
+          <span class="text-foreground">$</span>
+          code my-extension
+        </div>
+        <div class="mt-4 text-muted-foreground">
+          # 4. 在 VSCode 里按 F5，启动 Extension Development Host
+        </div>
+      </div>
+    </section>
+  </main>
+</PageLayout>

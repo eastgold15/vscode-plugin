@@ -13,7 +13,7 @@ export function getPackageJson(
   preferences: Preferences,
   versions: VersionGetter
 ) {
-  const { projectName, framework, linter } = preferences;
+  const { projectName, framework } = preferences;
 
   // === 列包名 = 声明分类，不再用 if/else 维护 ===
   const coreDeps: PackageName[] = ["@vscode/webview-ui-toolkit"];
@@ -44,17 +44,9 @@ export function getPackageJson(
         ? ["@vitejs/plugin-vue"]
         : [];
 
-  // Linter 已彻底移除 ESLint——只剩 Biome / ultracite / None
-  const linterDevDeps: readonly PackageName[] =
-    linter === "Biome"
-      ? ["@biomejs/biome"]
-      : linter === "ultracite"
-        ? ["ultracite"]
-        : [];
-
   const buckets = bucketVersions(versions, {
     dependencies: [...coreDeps, ...frameworkDeps],
-    devDependencies: [...coreDevDeps, ...frameworkDevDeps, ...linterDevDeps],
+    devDependencies: [...coreDevDeps, ...frameworkDevDeps],
     peerDependencies: corePeerDeps,
   });
 
@@ -64,10 +56,7 @@ export function getPackageJson(
     dev: "vite",
     preview: "vite preview",
   };
-  if (linter === "Biome") {
-    scripts.lint = "biome check .";
-    scripts["lint:fix"] = "biome check . --write";
-  }
+
   // ultracite 自身不带 npm scripts，调用方读官方 README 即可
 
   return outdent`

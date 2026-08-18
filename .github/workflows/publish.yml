@@ -20,6 +20,7 @@ on:
           - packages/vscode-utils
           - packages/vscode-webview
           - packages/vite-plugin-vscode
+          - packages/create-vscodep
 
 # 最低权限
 permissions:

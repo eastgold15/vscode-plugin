@@ -9,6 +9,7 @@
 | `packages/vscode-utils` | `@eastgold15/vscode-utils` |
 | `packages/vscode-webview` | `@eastgold15/vscode-webview` |
 | `packages/vite-plugin-vscode` | `@eastgold15/vite-plugin-vscode` |
+| `packages/create-vscodep` | `@eastgold15/vscodep-cli` |
 
 `apps/docs` 与 `examples/*` 是私有包，不发布。
 

@@ -1,0 +1,55 @@
+---
+title: 介绍
+description: VSCode 扩展开发工具链：脚手架、Vite 插件与运行时库
+---
+
+# VSCode 扩展开发工具链
+
+一个 monorepo，4 个互相协作的包，覆盖「创建 → 编译 → 跑」全链路。
+
+## 4 个包
+
+| 包 | 形态 | 干嘛的 |
+| --- | --- | --- |
+| [`@eastgold15/vscodep-cli`](https://www.npmjs.com/package/@eastgold15/vscodep-cli) | CLI | 一行命令搭出 VSCode 扩展项目，集成 React/Vue + ultracite/Biome |
+| [`@eastgold15/vite-plugin-vscode`](https://www.npmjs.com/package/@eastgold15/vite-plugin-vscode) | Vite 插件 | 让 Vite 编译出 VSCode 扩展产物（main + webview） |
+| [`@eastgold15/vscode-utils`](https://www.npmjs.com/package/@eastgold15/vscode-utils) | 运行时库 | 扩展主进程（Node）侧的工具集：API 客户端、配置读写 |
+| [`@eastgold15/vscode-webview`](https://www.npmjs.com/package/@eastgold15/vscode-webview) | 运行时库 | Webview 侧的 `WebviewApi` 客户端，与扩展主进程通信 |
+
+工具链按职责切三段：
+
+1. **脚手架**：`vscodep create` 生成项目，TypeScript + Vite + 你选的前端框架，约定优先。
+2. **构建**：`vite-plugin-vscode` 把 webview 与 extension 一起打包，调试用 HMR，发布用 prod build。
+3. **运行时**：`vscode-utils` 和 `vscode-webview` 收窄了 VSCode API + Webview ↔ Extension 通信的类型。
+
+## 5 分钟起步
+
+```bash
+# 1. 创建一个新扩展项目
+bunx @eastgold15/vscodep-cli create my-extension
+cd my-extension
+bun install
+
+# 2. 起 dev（F5 在 VSCode 里调试）
+bun run dev
+```
+
+生成的工程在 `.vscode/launch.json` 已经配好，按 F5 即可启动一个 Extension Development Host。
+
+## 谁适合用
+
+- 想跳过 Vite/TypeScript/VSCode 扩展 API 集成踩坑，直接进业务的人
+- 想统一团队内所有扩展的目录结构、依赖版本、lint 配置的人
+- 想用现代前端栈（React/Vue + Vite + ultracite）写 Webview 的人
+
+## 谁不太适合
+
+- 需要打包出非 VSCode 目标（如纯 web 部署）的项目——本工具链强绑定 VSCode 扩展形态
+- 已经在用 yo code / official `vsce init` 模板、需要逐字节兼容的项目
+
+## 下一步
+
+- [快速开始：创建第一个扩展](/docs/create-vscodep/quickstart) — 走一遍 `vscodep create` 的所有选项
+- [CLI 选项详解](/docs/create-vscodep/options) — 每个 flag 的语义
+- [Linter 选择](/docs/create-vscodep/linter) — ultracite / Biome / None 怎么挑
+- [三桶依赖系统](/docs/create-vscodep/deps-system) — 生成项目里 deps / devDeps / peerDeps 的来源

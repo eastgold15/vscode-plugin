@@ -1,0 +1,122 @@
+---
+title: vscode.d.ts 类型收窄
+description: command / i18n 字面量联合怎么生成
+---
+
+# vscode.d.ts 类型收窄
+
+`vscodep gen` 写 `vscode.d.ts` 的全部目的：**让拼错的 command id 与 i18n key 在编译期就被抓住**，而不是发布到 VSCode 后运行时才崩。
+
+## 两段内容
+
+```ts
+// types/vscode.d.ts
+import '@eastgold15/vscode-utils';
+
+declare module '@eastgold15/vscode-utils' {
+  type I18nMessageType = 'command.show.title' | 'extension.title';
+
+  interface NlsI18n {
+    t: ((message: I18nMessageType, ...args: Array<string | number | boolean>) => string) & ((message: I18nMessageType, args: Record<string, any>) => string);
+  }
+
+  // BuiltinCommand 来自 --builtin 白名单
+  export type BuiltinCommand = 'workbench.action.files.save' | 'workbench.action.reloadWindow';
+
+  // CommandId 来自 package.json#contributes.commands
+  export type CommandId = 'my-ext.show' | 'my-ext.hide';
+}
+```
+
+## 用户代码
+
+```ts
+import { commands } from 'vscode';
+import type { CommandId } from '@eastgold15/vscode-utils';
+
+function exec(id: CommandId) {
+  return commands.executeCommand(id);
+}
+
+exec('my-ext.show');                    // ✓
+exec('my-ext.shw');                     // ✗ TS2345
+exec('workbench.action.files.save');    // ✗ BuiltinCommand 不是 CommandId
+
+// 用 executeBuiltin 拿白名单里的
+import { executeBuiltin } from '@eastgold15/vscode-utils';
+executeBuiltin('workbench.action.files.save');  // ✓
+```
+
+## 收窄来源
+
+| 类型 | 来源 | 怎么改 |
+| --- | --- | --- |
+| `I18nMessageType` | `locales/<lang>.json` 的所有 key | 加新翻译 |
+| `CommandId` | `package.json#contributes.commands[*].command` | 加新 command |
+| `BuiltinCommand` | `--builtin a --builtin b` 传的白名单 | CLI flag |
+
+## BuiltinCommand 为什么需要显式白名单？
+
+VSCode 有几百个内置 command（`workbench.action.files.save`、`editor.action.formatDocument`...），全部收窄到 `CommandId` 会让你的代码只能调你**显式注册过**的命令——这通常不是想要的。
+
+`BuiltinCommand` 是"逃生口"：你显式声明"我的扩展会调这几个内置命令"，编译器就允许。否则：
+
+```ts
+commands.executeCommand('workbench.action.files.save');  // ✗ 类型太宽
+```
+
+## 完整 example
+
+```json
+// package.json
+{
+  "contributes": {
+    "commands": [
+      { "command": "my-ext.show", "title": "Show" },
+      { "command": "my-ext.hide", "title": "Hide" }
+    ]
+  }
+}
+```
+
+```bash
+vscodep gen --builtin workbench.action.files.save \
+            --builtin workbench.action.reloadWindow
+```
+
+```ts
+// types/vscode.d.ts (gen 生成)
+declare module '@eastgold15/vscode-utils' {
+  export type BuiltinCommand = 'workbench.action.files.save' | 'workbench.action.reloadWindow';
+  export type CommandId = 'my-ext.show' | 'my-ext.hide';
+}
+```
+
+后续在 `tsconfig.json` 里把 `types/` 加进 `include`，`tsc` 就会捡到这段。
+
+## 实战：把 builtin 配置持久化
+
+每次手敲 `--builtin` 不现实。`vscodep gen` 读 `vscodep.config.{ts,js,json}` 或 `.vscodeprc.*`（cosmiconfig 搜索）：
+
+```ts
+// vscodep.config.ts
+import { defineConfig } from 'vscodep/config';
+
+export default defineConfig({
+  builtin: [
+    'workbench.action.files.save',
+    'workbench.action.reloadWindow',
+    'editor.action.formatDocument',
+  ],
+});
+```
+
+跑 `vscodep gen` 自动应用。
+
+## watch 模式
+
+```bash
+vscodep gen --watch
+```
+
+监听 `locales/` 和 `package.json`，任一文件改动就重生成 `package.nls.json` + `vscode.d.ts`。

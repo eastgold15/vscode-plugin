@@ -1,0 +1,92 @@
+---
+title: 发版流程
+description: release-please + 手动 publish
+---
+
+# 发版流程
+
+仓库用 [release-please](https://github.com/googleapis/release-please) 自动算版本号、写 CHANGELOG、开 Release PR。**npm publish 仍然手动**——给 reviewer 一次最后审的机会。
+
+## 参与发版的包
+
+| 路径 | npm 包名 |
+| --- | --- |
+| `packages/vscode-utils` | `@eastgold15/vscode-utils` |
+| `packages/vscode-webview` | `@eastgold15/vscode-webview` |
+| `packages/vite-plugin-vscode` | `@eastgold15/vite-plugin-vscode` |
+| `packages/create-vscodep` | `@eastgold15/vscodep-cli` |
+
+`apps/docs` 是私有包，不发布。
+
+## 完整流程
+
+```
+1. 开发者按 Conventional Commits 提交
+   ↓
+2. push main → release-please.yml 自动开/更新 "chore(release): 版本发布" PR
+   ↓
+3. reviewer 看 CHANGELOG + 各 package.json#version
+   ↓
+4. 合并 PR → release-please 推 tag + 开 GitHub Release
+   ↓
+5. 手动触发 publish.yml（选要发布的包）→ npm publish --provenance
+```
+
+## 提交规范
+
+commit 的 `scope` 必须**匹配包目录名**：
+
+```bash
+feat(create-vscodep): 加 vscodep gen 命令    # 归到 vscodep-cli
+fix(vscode-utils): i18n.t 收窄参数类型        # 归到 vscode-utils
+feat(create-vscodep)!: 移除 ESLint 模板       # 触发 major
+```
+
+`scope` 写错（比如把 `vscode-utils` 写成 `vscodeUtils`）→ release-please 不识别，PR 不会包含那个包的版本变更。
+
+## 版本号 → semver 映射
+
+| commit type | 版本号变化 |
+| --- | --- |
+| `feat:` | minor (X.**Y**.Z) |
+| `fix:` / `perf:` | patch (X.Y.**Z**) |
+| `feat!:` / `fix!:` / `<type>!:` | major (**X**.Z) |
+| `BREAKING CHANGE:` (footer) | major |
+| `chore:` / `docs:` / `refactor:` / `test:` / `ci:` / `build:` | 不变（CHANGELOG 隐藏） |
+
+## 手动补发
+
+某次发布失败要重发：
+
+1. 打开 GitHub Actions
+2. 选 `publish` workflow
+3. 点 `Run workflow`，下拉选要重发的包路径
+4. workflow 会跑全量 `bun run build` 然后 `npm publish --provenance --access public`
+
+## 本地试跑 release-please（无 token）
+
+```bash
+npx -y release-please manifest-pr \
+  --config-file .github/release-please-config.json \
+  --manifest-file .github/.release-please-manifest.json \
+  --dry-run
+```
+
+会打印"下一个版本号应该是多少、CHANGELOG 会写什么"，不开 PR。
+
+## NPMTOKEN secret
+
+发布用的 token 存在 GitHub repo settings：
+
+- 名字：`NPMTOKEN`（**不是** `NPM_TOKEN`）
+- 值：`npm token create` 生成的 publish token（需要 Bypass 2FA）
+
+## 多个包同时发版
+
+config 里有 `separate-pull-requests: false`，所以多个包的版本变更合并到**同一个** PR。
+
+reviewer 合并前确认：
+
+- [ ] CHANGELOG 描述准确，且每个 commit scope 对应正确的包
+- [ ] 破坏性改动确实走了 major，没被误判成 minor
+- [ ] 如果改了 `peerDependencies` 的版本范围，对应包有相应的版本 bump

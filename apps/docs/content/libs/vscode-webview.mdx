@@ -1,0 +1,94 @@
+---
+title: "@eastgold15/vscode-webview"
+description: Webview 侧的消息通信与状态管理
+---
+
+# `@eastgold15/vscode-webview`
+
+跑在 **Webview 端**（浏览器环境）—— React/Vue 组件里。它是 VSCode 原生 `acquireVsCodeApi()` 的类型化包装，处理 3 件事：
+
+- `postMessage` 发送到扩展主进程
+- 监听主进程消息
+- 持久化状态（`getState` / `setState`）
+
+## 安装
+
+```bash
+bun add @eastgold15/vscode-webview
+```
+
+## 基础用法
+
+```ts
+// src/utils/vscode.ts
+import { WebviewApi } from '@eastgold15/vscode-webview';
+
+// 单例——避免多次调用 acquireVsCodeApi() 报错
+export const vscode = new WebviewApi<string>();
+```
+
+> `acquireVsCodeApi()` 在同一 webview 生命周期内只能调一次。`new WebviewApi()` 内部用模块级缓存保证单例。
+
+## 发消息
+
+```ts
+// 发到主进程
+vscode.postMessage({
+  type: 'open-file',
+  data: { path: '/foo/bar.ts' },
+});
+
+// 等响应（带 timeout）
+const result = await vscode.postMessageAsync(
+  { type: 'fetch-config', data: { key: 'editor.fontSize' } },
+  { timeout: 5000 }
+);
+```
+
+## 收消息
+
+```ts
+vscode.onMessage((msg) => {
+  if (msg.type === 'config-updated') {
+    console.log('config changed:', msg.data);
+  }
+});
+```
+
+## 状态持久化
+
+VSCode 重启 webview 时，`getState` / `setState` 帮你保留状态（写入 `vscode.State`）：
+
+```ts
+const layout = vscode.getState()?.layout ?? 'default';
+vscode.setState({ ...vscode.getState(), layout: 'compact' });
+```
+
+## 类型：消息契约
+
+`WebviewApi` 默认是 `unknown` payload。建议**手动定义协议**：
+
+```ts
+// src/types/messages.ts
+export type WebviewToExt =
+  | { type: 'open-file'; data: { path: string } }
+  | { type: 'fetch-config'; data: { key: string } };
+
+export type ExtToWebview =
+  | { type: 'config-updated'; data: { key: string; value: unknown } }
+  | { type: 'show-error'; data: { message: string } };
+```
+
+```ts
+// src/utils/vscode.ts
+import { WebviewApi } from '@eastgold15/vscode-webview';
+import type { WebviewToExt, ExtToWebview } from '../types/messages';
+
+export const vscode = new WebviewApi<unknown, WebviewToExt, ExtToWebview>();
+```
+
+后续 `vscode.postMessage(...)` 的 `data` 字段会被 `WebviewToExt` 收窄。
+
+## 完整 API
+
+去 [/api](https://typedoc 生成的 API 文档) 看每个 export。

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/eastgold15/vscode-plugin/compare/vscodep-cli-v0.2.0...vscodep-cli-v0.2.1) (2026-08-18)
+
+
+### Bug Fixes
+
+* **create-vscodep:** 通过 npm registry 解析 @eastgold15/* 版本号 ([#23](https://github.com/eastgold15/vscode-plugin/issues/23)) ([fc795ed](https://github.com/eastgold15/vscode-plugin/commit/fc795ed8c70dfc812d826c78f7ae0db628e9ee01))
+
 ## [0.2.0](https://github.com/eastgold15/vscode-plugin/compare/vscodep-cli-v0.1.0...vscodep-cli-v0.2.0) (2026-08-18)
 
 

@@ -31,7 +31,7 @@
     "typedoc": "^0.28.20",
     "typedoc-plugin-markdown": "^4.12.0",
     "typescript": "^5.9.3",
-    "ultracite": "7.10.0"
+    "ultracite": "7.10.5"
   },
   "packageManager": "bun@1.3.14",
   "engines": {

@@ -21,9 +21,12 @@ const require = createRequire(import.meta.url);
 
 const logger: Pail = createPail().scope("vscodep");
 let cachedVersions: VersionGetter | undefined;
-function getVersions(): VersionGetter {
+async function getVersions(): Promise<VersionGetter> {
   if (!cachedVersions) {
-    cachedVersions = getDefaultVersions(require.resolve("../package.json"));
+    // getDefaultVersions 现在是 async:要去 npm registry 拉 @eastgold15/* 的最新版本
+    cachedVersions = await getDefaultVersions({
+      ownPackageJsonPath: require.resolve("../package.json"),
+    });
   }
   return cachedVersions;
 }
@@ -76,7 +79,8 @@ export const createCommand = {
 
     const preferences = materialize(p);
     try {
-      await render(preferences, getVersions());
+      const versions = await getVersions();
+      await render(preferences, versions);
     } catch (e) {
       throw new VisulimaError({
         cause: e,

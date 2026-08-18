@@ -1,6 +1,6 @@
 {
   "name": "@eastgold15/vscode-webview",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "优化 webview 页面与 vscode 扩展之间的 postMessage 通信",
   "keywords": [
     "vscode",

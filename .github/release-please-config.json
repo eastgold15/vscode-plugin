@@ -1,5 +1,5 @@
 {
-  "$schema": "https://googleapis.github.io/release-please/schemas/config.json",
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "separate-pull-requests": false,
   "group-pull-request-title-pattern": "chore(release): 版本发布",
   "changelog-sections": [

@@ -51,7 +51,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "execa": "^9.6.1",
+    "execa": "^10.0.1",
     "lodash.merge": "^4.6.2",
     "node-html-parser": "^7.0.2",
     "picocolors": "^1.1.1",

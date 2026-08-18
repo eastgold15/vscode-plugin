@@ -1,6 +1,6 @@
 {
   "name": "@eastgold15/vite-plugin-vscode",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "用 vue/react 开发 vscode extension webview，支持 esm/cjs 与 HMR",
   "keywords": [
     "vite",

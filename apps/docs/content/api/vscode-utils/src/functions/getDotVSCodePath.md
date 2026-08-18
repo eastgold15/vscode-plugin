@@ -8,7 +8,7 @@
 
 > **getDotVSCodePath**(): `string`
 
-Defined in: packages/vscode-utils/src/user.ts:25
+Defined in: [packages/vscode-utils/src/user.ts:25](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-utils/src/user.ts#L25)
 
 Get .vscode path
 

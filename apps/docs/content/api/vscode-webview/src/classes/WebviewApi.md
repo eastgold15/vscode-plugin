@@ -6,7 +6,7 @@
 
 # Class: WebviewApi\<StateType\>
 
-Defined in: packages/vscode-webview/src/index.ts:53
+Defined in: [packages/vscode-webview/src/index.ts:53](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L53)
 
 A utility wrapper around the acquireVsCodeApi() function, which enables
 message passing and state management between the webview and extension
@@ -24,7 +24,7 @@ contexts.
 
 > **new WebviewApi**\<`StateType`\>(`options?`): `WebviewApi`\<`StateType`\>
 
-Defined in: packages/vscode-webview/src/index.ts:63
+Defined in: [packages/vscode-webview/src/index.ts:63](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L63)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: packages/vscode-webview/src/index.ts:63
 
 > **getState**(): `StateType` \| `undefined`
 
-Defined in: packages/vscode-webview/src/index.ts:227
+Defined in: [packages/vscode-webview/src/index.ts:227](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L227)
 
 Get the persistent state stored for this webview.
 
@@ -58,7 +58,7 @@ The current state or `undefined` if no state has been set.
 
 > **off**(`type`): `void`
 
-Defined in: packages/vscode-webview/src/index.ts:210
+Defined in: [packages/vscode-webview/src/index.ts:210](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L210)
 
 Remove a listener for a message type
 
@@ -80,7 +80,7 @@ the message type
 
 > **on**\<`T`\>(`type`, `success`, `fail?`): `void`
 
-Defined in: packages/vscode-webview/src/index.ts:198
+Defined in: [packages/vscode-webview/src/index.ts:198](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L198)
 
 Register a listener for a message type
 
@@ -120,7 +120,7 @@ the fail listener
 
 > **post**(`type`, `data`): `void`
 
-Defined in: packages/vscode-webview/src/index.ts:131
+Defined in: [packages/vscode-webview/src/index.ts:131](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L131)
 
 Post a message to the owner of the webview
 
@@ -148,7 +148,7 @@ the message content
 
 > **postAndReceive**\<`T`\>(`type`, `data`, `options?`): `Promise`\<`T`\>
 
-Defined in: packages/vscode-webview/src/index.ts:141
+Defined in: [packages/vscode-webview/src/index.ts:141](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L141)
 
 Post a message to the owner of the webview, and return the response. The type of the message to be sent and received must be the same.
 
@@ -186,7 +186,7 @@ the message content
 
 > **postMessage**\<`T`\>(`message`): `void`
 
-Defined in: packages/vscode-webview/src/index.ts:218
+Defined in: [packages/vscode-webview/src/index.ts:218](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L218)
 
 Post a message to the owner of the webview
 
@@ -214,7 +214,7 @@ the message content
 
 > **setOptions**(`options`): `void`
 
-Defined in: packages/vscode-webview/src/index.ts:86
+Defined in: [packages/vscode-webview/src/index.ts:86](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L86)
 
 set the post message options
 
@@ -234,7 +234,7 @@ set the post message options
 
 > **setState**\<`T`\>(`newState`): `T`
 
-Defined in: packages/vscode-webview/src/index.ts:239
+Defined in: [packages/vscode-webview/src/index.ts:239](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L239)
 
 Set the persistent state stored for this webview.
 

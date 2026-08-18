@@ -6,7 +6,7 @@
 
 # Class: Configuration\<T\>
 
-Defined in: packages/vscode-utils/src/configuration.ts:26
+Defined in: [packages/vscode-utils/src/configuration.ts:26](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-utils/src/configuration.ts#L26)
 
 ## Type Parameters
 
@@ -20,7 +20,7 @@ Defined in: packages/vscode-utils/src/configuration.ts:26
 
 > **new Configuration**\<`T`\>(`identifier`, `defaultValues?`): `Configuration`\<`T`\>
 
-Defined in: packages/vscode-utils/src/configuration.ts:30
+Defined in: [packages/vscode-utils/src/configuration.ts:30](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-utils/src/configuration.ts#L30)
 
 #### Parameters
 
@@ -42,7 +42,7 @@ Defined in: packages/vscode-utils/src/configuration.ts:30
 
 > **configuration**(): `WorkspaceConfiguration`
 
-Defined in: packages/vscode-utils/src/configuration.ts:35
+Defined in: [packages/vscode-utils/src/configuration.ts:35](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-utils/src/configuration.ts#L35)
 
 #### Returns
 
@@ -54,7 +54,7 @@ Defined in: packages/vscode-utils/src/configuration.ts:35
 
 > **get**\<`V`\>(`section`, `defaultValue?`): `V` \| `undefined`
 
-Defined in: packages/vscode-utils/src/configuration.ts:45
+Defined in: [packages/vscode-utils/src/configuration.ts:45](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-utils/src/configuration.ts#L45)
 
 Return a value from this configuration.
 
@@ -92,7 +92,7 @@ Return a value from this configuration.
 
 > **update**(`section`, `value`, `target?`): `Promise`\<`void`\>
 
-Defined in: packages/vscode-utils/src/configuration.ts:78
+Defined in: [packages/vscode-utils/src/configuration.ts:78](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-utils/src/configuration.ts#L78)
 
 Update a configuration value. The updated configuration values are persisted.
 
@@ -128,7 +128,7 @@ The ConfigurationTarget configuration target or a boolean value. Defaults to `tr
 
 > **update**(`values`, `target?`): `Promise`\<`void`\>
 
-Defined in: packages/vscode-utils/src/configuration.ts:93
+Defined in: [packages/vscode-utils/src/configuration.ts:93](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-utils/src/configuration.ts#L93)
 
 Update configuration values. The updated configuration values are persisted.
 
@@ -160,7 +160,7 @@ The ConfigurationTarget configuration target or a boolean value. Defaults to `tr
 
 > **values**(): `T`
 
-Defined in: packages/vscode-utils/src/configuration.ts:55
+Defined in: [packages/vscode-utils/src/configuration.ts:55](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-utils/src/configuration.ts#L55)
 
 Get all Configuration values.
 

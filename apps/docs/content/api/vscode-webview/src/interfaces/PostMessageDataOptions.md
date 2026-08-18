@@ -6,7 +6,7 @@
 
 # Interface: PostMessageDataOptions
 
-Defined in: packages/vscode-webview/src/index.ts:19
+Defined in: [packages/vscode-webview/src/index.ts:19](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L19)
 
 ## Properties
 
@@ -14,7 +14,7 @@ Defined in: packages/vscode-webview/src/index.ts:19
 
 > `optional` **dataKey?**: `string`
 
-Defined in: packages/vscode-webview/src/index.ts:23
+Defined in: [packages/vscode-webview/src/index.ts:23](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L23)
 
 the name of data in the message, default 'data'
 
@@ -24,6 +24,6 @@ the name of data in the message, default 'data'
 
 > `optional` **typeKey?**: `string`
 
-Defined in: packages/vscode-webview/src/index.ts:27
+Defined in: [packages/vscode-webview/src/index.ts:27](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-webview/src/index.ts#L27)
 
 the name of key in the message, default 'type'

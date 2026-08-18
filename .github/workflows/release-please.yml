@@ -14,11 +14,12 @@ jobs:
     name:  Release PR
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
+      releases_created: ${{ steps.release.outputs.releases_created }}
+      paths_released: ${{steps.release.outputs.paths_released}}
       tag_name: ${{ steps.release.outputs.tag_name }}
       version: ${{ steps.release.outputs.version }}
     steps:
-      - uses: googleapis/release-please-action@v4 # v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           config-file: .github/release-please-config.json
@@ -28,38 +29,48 @@ jobs:
         env:
           RP_OUT: ${{ toJson(steps.release.outputs) }}
         run: echo "$RP_OUT"
-
-
   publish:
-    name: Publish to npm
-    needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write  # OIDC for npm provenance
-    steps:
-      - uses: actions/checkout@v6
+     name: Publish to npm
+     needs: release-please
+     if: ${{ needs.release-please.outputs.releases_created == 'true' }}
+     runs-on: ubuntu-latest
+     permissions:
+       id-token: write
+     steps:
+       - uses: actions/checkout@v7
 
-      - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+       - uses: oven-sh/setup-bun@v2
+         with:
+           bun-version: latest
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          registry-url: 'https://registry.npmjs.org'
+       - uses: actions/setup-node@v7
+         with:
+           node-version: 24
+           registry-url: 'https://registry.npmjs.org'
+           package-manager-cache: false
 
-      - name: Install dependencies
-        run: bun install --frozen-lockfile
+       - name: Install dependencies
+         run: bun install --frozen-lockfile
 
+       - name: Build all packages
+         run: bun run build
 
-      - name: Test
-        run: bun test
+       - name: Publish released packages
+         run: |
+           PATHS_RELEASED='${{ needs.release-please.outputs.paths_released }}'
+           echo "📋 Released paths: $PATHS_RELEASED"
 
-      - name: 编译全部包
-        run: bun run build
+           # 检查是否有包要发布
+           if [ "$PATHS_RELEASED" = "[]" ] || [ -z "$PATHS_RELEASED" ]; then
+             echo "⚠️ No packages to publish"
+             exit 0
+           fi
 
-      - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPMTOKEN }}
+           for pkg in $(echo "$PATHS_RELEASED" | jq -r '.[]'); do
+             echo "📦 Publishing $pkg..."
+             cd "$pkg"
+             npm publish --provenance --access public
+             cd -
+           done
+         env:
+           NODE_AUTH_TOKEN: ${{ secrets.NPMTOKEN }}

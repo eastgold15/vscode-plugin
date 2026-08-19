@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/eastgold15/vscode-plugin/compare/vscodep-cli-v0.2.1...vscodep-cli-v0.2.2) (2026-08-19)
+
+
+### Bug Fixes
+
+* 清理代码中的多余空行 ([b06bd8a](https://github.com/eastgold15/vscode-plugin/commit/b06bd8aa9011788738d4b14f0a404799ba51d4d6))
+
 ## [0.2.1](https://github.com/eastgold15/vscode-plugin/compare/vscodep-cli-v0.2.0...vscodep-cli-v0.2.1) (2026-08-18)
 
 

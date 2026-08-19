@@ -12,7 +12,13 @@ export function getViteConfig(preferences: Preferences) {
     pluginConfig = "react(),";
   } else if (framework === "vue") {
     pluginImport = `import vue from '@vitejs/plugin-vue';`;
-    pluginConfig = "vue(),";
+    pluginConfig = `vue({
+      template: {
+        compilerOptions: {
+          isCustomElement: (tag: string) => tag.startsWith('vscode-'),
+        },
+      },
+    }),`;
   }
 
   return outdent`
@@ -21,11 +27,19 @@ export function getViteConfig(preferences: Preferences) {
     import { fileURLToPath, URL } from 'node:url';
     import react from '@vitejs/plugin-react-swc';
     ${pluginImport}
-  
+
     export default defineConfig({
       plugins: [
         ${pluginConfig}
-        vscode(),
+        vscode({
+          extension: {
+            minify: false,
+          },
+          webview: {
+            // csp: '<meta http-equiv="Content-Security-Policy" />',
+          },
+          devtools: false,
+        }),
       ],
       resolve: {
         alias: {

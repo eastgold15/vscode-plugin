@@ -2,6 +2,10 @@
   "name": "@eastgold15/vscodep-cli",
   "version": "0.2.1",
   "description": "VSCode 扩展开发工具链：脚手架与代码生成",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eastgold15/vscode-plugin.git"
+  },
   "sideEffects": false,
   "type": "module",
   "bin": {

@@ -1,6 +1,17 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+   // 1. 允许 VSCode 从网络下载 JSON Schema
+ "json.schemaDownload.enable": true,
+    // 2. 显式将你的配置文件与 Schema URL 关联
+  "json.schemas": [
+        {
+            "fileMatch": ["release-please-config.json"],
+            "url": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+        }
+    ],
+    // 3. 将 GitHub 的 raw 域名加入信任列表（关键步骤！）
+    "json.schemaDownload.allowedDomains": [
+        "raw.githubusercontent.com"
+    ],
   "editor.formatOnSave": true,
   "editor.formatOnPaste": true,
   "emmet.showExpandedAbbreviation": "never",

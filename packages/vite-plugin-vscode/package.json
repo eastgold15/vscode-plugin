@@ -1,6 +1,6 @@
 {
   "name": "@eastgold15/vite-plugin-vscode",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "用 vue/react 开发 vscode extension webview，支持 esm/cjs 与 HMR",
   "keywords": [
     "vite",
@@ -51,19 +51,19 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "execa": "^9.6.1",
+    "execa": "^10.0.1",
     "lodash.merge": "^4.6.2",
-    "node-html-parser": "^7.0.2",
+    "node-html-parser": "^9.0.1",
     "picocolors": "^1.1.1",
     "tsdown": "^0.22.14"
   },
   "devDependencies": {
     "@types/lodash.merge": "^4.6.9",
-    "@types/node": "^20.19.28",
+    "@types/node": "^26.2.0",
     "@types/vscode": "^1.108.1",
     "publint": "^0.3.16",
     "typescript": "^5.9.3",
-    "vite": "^7.3.1"
+    "vite": "^8.2.1"
   },
   "peerDependencies": {
     "@types/vscode": "^1.56.0",

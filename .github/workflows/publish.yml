@@ -41,7 +41,7 @@ jobs:
       # setup-node + registry-url 写一个 .npmrc,
       # 里面 `//registry.npmjs.org/:_authToken=NODE_AUTH_TOKEN`
       # 这样 npm 走 token 验证身份
-      - uses: actions/setup-node@v4 # v4
+      - uses: actions/setup-node@v7 # v4
         with:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"

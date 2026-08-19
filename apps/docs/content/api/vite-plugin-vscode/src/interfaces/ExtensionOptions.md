@@ -6,7 +6,7 @@
 
 # Interface: ExtensionOptions
 
-Defined in: packages/vite-plugin-vscode/src/types.ts:6
+Defined in: [packages/vite-plugin-vscode/src/types.ts:6](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vite-plugin-vscode/src/types.ts#L6)
 
 vscode extension options. See [tsdown](https://tsdown.dev/) and [Config Options](https://tsdown.dev/reference/config-options) for more information.
 
@@ -359,7 +359,7 @@ By default, this option is auto-detected based on your project's `package.json`:
 
 > `optional` **entry?**: `string`
 
-Defined in: packages/vite-plugin-vscode/src/types.ts:12
+Defined in: [packages/vite-plugin-vscode/src/types.ts:12](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vite-plugin-vscode/src/types.ts#L12)
 
 The extension entry file.
 
@@ -887,7 +887,7 @@ You can specify command to be executed after a successful build, specially usefu
 
 > `optional` **outDir?**: `string`
 
-Defined in: packages/vite-plugin-vscode/src/types.ts:17
+Defined in: [packages/vite-plugin-vscode/src/types.ts:17](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vite-plugin-vscode/src/types.ts#L17)
 
 The output directory for the extension files. Default is `dist-extension`.
 
@@ -1315,7 +1315,7 @@ false
 
 > `optional` **watchFiles?**: `string` \| `string`[]
 
-Defined in: packages/vite-plugin-vscode/src/types.ts:23
+Defined in: [packages/vite-plugin-vscode/src/types.ts:23](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vite-plugin-vscode/src/types.ts#L23)
 
 `tsdown` watches the current working directory by default. You can set files that need to be watched, which may improve performance.
 

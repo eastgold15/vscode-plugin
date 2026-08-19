@@ -8,7 +8,7 @@
 
 > **getActiveWorkspaceFolder**(): `WorkspaceFolder` \| `undefined`
 
-Defined in: packages/vscode-utils/src/workspace.ts:7
+Defined in: [packages/vscode-utils/src/workspace.ts:7](https://github.com/eastgold15/vscode-plugin/blob/ef178bfe0f64f9c1a79a1fb8f482d0808aad45ba/packages/vscode-utils/src/workspace.ts#L7)
 
 Get the active workspace folder
 
